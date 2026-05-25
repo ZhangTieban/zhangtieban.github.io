@@ -3297,7 +3297,7 @@ button:disabled {
     place-items: start center;
   }
   body.tutorial-focus {
-    --tutorial-mobile-panel-h: 252px;
+    --tutorial-mobile-panel-h: 214px;
     min-height: 100svh;
     height: auto;
     overflow-y: auto;
@@ -3310,18 +3310,18 @@ button:disabled {
     gap: 12px;
   }
   body.tutorial-focus .layout {
-    gap: 8px;
+    gap: 6px;
   }
   body.tutorial-focus .watch-stage {
     align-items: center;
-    gap: 14px;
+    gap: 8px;
   }
   body.tutorial-focus .sim-title {
     width: min(100%, var(--watch-screen-layout-w));
     transform: translateX(calc(-1 * var(--watch-screen-center-shift)));
-    font-size: 17px;
-    line-height: 22px;
-    min-height: 22px;
+    font-size: 15px;
+    line-height: 18px;
+    min-height: 18px;
     text-align: center;
   }
   .side-rail {
@@ -3370,8 +3370,8 @@ button:disabled {
     gap: 8px;
   }
   body.tutorial-focus .tutorial-panel {
-    padding: 10px;
-    gap: 6px;
+    padding: 8px;
+    gap: 5px;
     height: var(--tutorial-mobile-panel-h);
     max-height: var(--tutorial-mobile-panel-h);
     overflow: hidden;
@@ -3383,8 +3383,8 @@ button:disabled {
     flex: 0 0 auto;
   }
   .tutorial-title {
-    font-size: 18px;
-    line-height: 24px;
+    font-size: 17px;
+    line-height: 22px;
   }
   .tutorial-body {
     gap: 6px;
@@ -3407,7 +3407,10 @@ button:disabled {
     line-height: 20px;
   }
   body.tutorial-focus .tutorial-body p {
-    line-height: 19px;
+    line-height: 18px;
+  }
+  body.tutorial-focus .tutorial-wait-hint:not(.active) {
+    min-height: 0;
   }
   .tutorial-chapters {
     gap: 6px;
@@ -3452,7 +3455,7 @@ button:disabled {
     gap: 6px;
   }
   body.tutorial-focus .tutorial-btn {
-    height: 32px;
+    height: 30px;
     font-size: 13px;
   }
   body.tutorial-focus .tutorial-btn.primary {
