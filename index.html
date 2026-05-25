@@ -191,6 +191,27 @@
         min-height: 0;
       }
 
+      body.mode-tutorial .topbar {
+        padding: 6px 10px 7px;
+      }
+
+      body.mode-tutorial .topbar-inner {
+        gap: 0;
+      }
+
+      body.mode-tutorial .site-title {
+        font-size: clamp(15px, 4.6vw, 18px);
+        line-height: 1.12;
+      }
+
+      body.mode-tutorial .mode-tabs {
+        display: none;
+      }
+
+      body.mode-tutorial .view-stage {
+        padding-top: 6px;
+      }
+
     }
   </style>
 </head>
@@ -241,6 +262,9 @@
       panels.forEach((panel) => {
         panel.classList.toggle('active', panel.dataset.panel === nextMode);
       });
+      document.body.classList.toggle('mode-tutorial', nextMode === 'tutorial');
+      document.body.classList.toggle('mode-flasher', nextMode === 'flasher');
+      document.body.classList.toggle('mode-license', nextMode === 'license');
       document.title = `${modeLabels[nextMode]} - 適用於戰鬥陀螺X轉速顯示裝置`;
       if (writeHash) history.replaceState(null, '', `#${nextMode}`);
     }
