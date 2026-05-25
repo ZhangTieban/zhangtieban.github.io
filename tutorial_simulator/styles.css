@@ -3297,6 +3297,7 @@ button:disabled {
     place-items: start center;
   }
   body.tutorial-focus {
+    --tutorial-mobile-panel-h: 252px;
     min-height: 100svh;
     height: auto;
     overflow-y: auto;
@@ -3333,6 +3334,7 @@ button:disabled {
   body.tutorial-focus .side-rail {
     order: -1;
     margin-top: 0;
+    min-height: var(--tutorial-mobile-panel-h);
   }
   .control-panel {
     width: min(100%, var(--watch-screen-layout-w));
@@ -3370,8 +3372,15 @@ button:disabled {
   body.tutorial-focus .tutorial-panel {
     padding: 10px;
     gap: 6px;
-    max-height: min(252px, 38svh);
+    height: var(--tutorial-mobile-panel-h);
+    max-height: var(--tutorial-mobile-panel-h);
     overflow: hidden;
+  }
+  body.tutorial-focus .tutorial-head,
+  body.tutorial-focus .tutorial-wait-hint,
+  body.tutorial-focus .tutorial-block-hint,
+  body.tutorial-focus .tutorial-actions {
+    flex: 0 0 auto;
   }
   .tutorial-title {
     font-size: 18px;
@@ -3383,6 +3392,15 @@ button:disabled {
     overflow-y: auto;
     overscroll-behavior: contain;
     padding-right: 2px;
+  }
+  body.tutorial-focus .tutorial-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+  }
+  body.tutorial-focus .tutorial-panel.chapter-menu .tutorial-body {
+    flex: 0 0 auto;
+    max-height: 44px;
   }
   .tutorial-body p {
     font-size: 14px;
@@ -3396,6 +3414,17 @@ button:disabled {
     max-height: min(168px, 24svh);
     overflow-y: auto;
     overscroll-behavior: contain;
+  }
+  body.tutorial-focus .tutorial-chapters {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+  }
+  body.tutorial-focus .tutorial-chapters.hidden {
+    display: none;
+  }
+  body.tutorial-focus .tutorial-panel.chapter-menu .tutorial-chapters {
+    flex: 1 1 auto;
   }
   .tutorial-chapter-btn {
     min-height: 42px;

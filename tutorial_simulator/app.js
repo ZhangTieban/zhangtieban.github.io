@@ -899,11 +899,13 @@ function updateViewportScale() {
 
   const availableW = Math.max(260, vw - 20);
   const tutorialFocus = !!(state.tutorialActive && state.tutorialOpen && !state.tutorialDone);
+  const tutorialPanelReserve = Math.min(252, Math.max(214, Math.round(vh * 0.36)));
+  document.documentElement.style.setProperty("--tutorial-mobile-panel-h", tutorialPanelReserve + "px");
   const compactMaxScale = tutorialFocus ? 0.78 : 0.88;
   const widthScale = Math.min(compactMaxScale, availableW / WATCH_STAGE_W);
   const tutorialControlsNeeded = !!(document.body?.classList.contains("tutorial-controls-needed"));
   const titleReserve = tutorialFocus ? 34 : 44;
-  const railReserve = tutorialFocus ? (tutorialControlsNeeded ? 250 : 190) : 118;
+  const railReserve = tutorialFocus ? (tutorialControlsNeeded ? tutorialPanelReserve + 72 : tutorialPanelReserve) : 118;
   const verticalReserve = 18 + titleReserve + railReserve;
   const heightScale = Math.min(compactMaxScale, Math.max(0.42, (vh - verticalReserve) / SCREEN_H));
   const shouldFitHeight = tutorialFocus || vw > vh || vh < 620;
@@ -4044,6 +4046,7 @@ function renderTutorial() {
   document.body?.classList.toggle("tutorial-controls-needed", shouldShowControls);
   if (focusChanged || controlsChanged) updateViewportScale();
   panel.classList.toggle("hidden", !state.tutorialOpen || !active);
+  panel.classList.toggle("chapter-menu", !!step?.chapterMenu);
   openBtn.classList.toggle("active", state.tutorialOpen && active);
   openBtn.classList.toggle("panel-open", state.tutorialOpen && active);
   openBtn.textContent = active ? (state.tutorialOpen ? "收合教學" : "繼續教學") : "章節教學";
