@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>教學模擬 - 適用於戰鬥陀螺X轉速顯示裝置</title>
+  <link rel="stylesheet" href="styles.css?v=20260525_layout2">
+</head>
+<body>
+  <main class="layout">
+    <section class="watch-stage" aria-label="教學模擬 - 適用於戰鬥陀螺X轉速顯示裝置">
+      <h1 class="sim-title">教學說明模擬器</h1>
+      <div id="watchShell" class="watch-shell">
+    <section class="screen" aria-label="適用於戰鬥陀螺X轉速顯示裝置 LVGL">
+      <button id="timerSideButton" class="screen-side-button side-button-top" type="button" aria-label="碼表停止"></button>
+      <button id="settingsSideButton" class="screen-side-button side-button-bottom" type="button" aria-label="進入設定"></button>
+      <button id="chargePortButton" class="charger-plug-btn" type="button" aria-label="切換充電狀態">
+        <span class="charger-plug-cable" aria-hidden="true"></span>
+        <span class="charger-plug-body" aria-hidden="true">
+          <span class="charger-prong" aria-hidden="true"></span>
+          <span class="charger-prong" aria-hidden="true"></span>
+        </span>
+      </button>
+      <span id="sdSlot" class="sd-slot" aria-hidden="true"></span>
+      <section id="bootScreen" class="screen-view boot-screen" aria-label="開機畫面">
+        <div class="boot-title">戰鬥陀螺X轉速顯示裝置</div>
+        <div class="boot-subtitle">我們並不是以遊戲的心情在玩戰鬥陀螺的</div>
+        <div class="boot-bar" aria-hidden="true">
+          <div id="bootBarFill" class="boot-bar-fill"></div>
+        </div>
+        <div id="bootPct" class="boot-pct">0%</div>
+      </section>
+
+      <section id="offScreen" class="screen-view off-screen active" aria-label="關機畫面">
+        <div id="offBatteryHint" class="off-battery-hint hidden" aria-live="polite">
+          <div id="offBatteryPct" class="off-battery-pct">0%</div>
+          <div id="offBatteryTitle" class="off-battery-title">電量不足</div>
+          <div id="offBatteryText" class="off-battery-text">請插入 Type-C 充電</div>
+        </div>
+      </section>
+
+      <section id="watchScreen" class="screen-view watch-screen" aria-label="錶面">
+        <img class="watch-x-bg" src="assets/x_watch_240.png?v=20260518_225900" alt="" aria-hidden="true" draggable="false">
+        <svg class="watch-ring-svg" viewBox="0 0 370 452" aria-hidden="true">
+          <path class="watch-ring-track ring-path" d="M185 3.5 H284 A82.5 82.5 0 0 1 366.5 86 V366 A82.5 82.5 0 0 1 284 448.5 H86 A82.5 82.5 0 0 1 3.5 366 V86 A82.5 82.5 0 0 1 86 3.5 H185"></path>
+          <path class="watch-ring-progress ring-path ring-progress-path" d="M185 3.5 H284 A82.5 82.5 0 0 1 366.5 86 V366 A82.5 82.5 0 0 1 284 448.5 H86 A82.5 82.5 0 0 1 3.5 366 V86 A82.5 82.5 0 0 1 86 3.5 H185"></path>
+        </svg>
+        <button id="watchBbpHotspot" class="watch-gyro-hotspot" type="button" aria-label="進入模式選擇">
+          <span class="watch-gyro-layer" aria-hidden="true">
+            <img class="watch-gyro-emblem" src="assets/gyro_emblem_240_a8_lvgl.png?v=20260518_225900" alt="" draggable="false">
+            <span class="watch-go-label">GO</span>
+          </span>
+        </button>
+        <div id="watchDate" class="watch-date">1994 / 04 / 03 / 週一</div>
+        <div id="watchTime" class="watch-time">00:00</div>
+        <button id="watchSettingsHotspot" class="watch-settings-hotspot" type="button" aria-label="進入設定"></button>
+      </section>
+
+      <section id="menuScreen" class="screen-view menu-screen" aria-label="模式選擇">
+        <h1 class="menu-title">模式選擇</h1>
+        <button class="mode-card mode-card-enabled mode-card-solo" type="button" data-mode="bbp">
+          積分器連線測速
+        </button>
+        <button class="mode-card mode-card-disabled mode-card-dual" type="button" disabled>
+          積分器雙人對戰
+        </button>
+        <button class="mode-card mode-card-disabled mode-card-sim" type="button" disabled>
+          積分器模擬連線
+        </button>
+      </section>
+
+      <section id="settingsScreen" class="screen-view settings-screen" aria-label="設定">
+        <div class="settings-statusbar" aria-hidden="true">
+          <span class="settings-status-time">00:00</span>
+          <span class="settings-status-batt"><span class="settings-batt-icon" aria-hidden="true"></span><span>--%</span></span>
+        </div>
+        <h1 class="settings-title">設定</h1>
+        <div class="settings-list">
+          <div class="settings-spacer" aria-hidden="true"></div>
+          <button class="settings-row" type="button" data-settings-page="datetime">
+            <span class="settings-icon settings-img-icon settings-img-calendar settings-icon-datetime" aria-hidden="true"></span>
+            <span class="settings-main">日期與時間</span>
+            <span class="settings-arrow">›</span>
+          </button>
+          <button class="settings-row" type="button" data-settings-page="brightness">
+            <span class="settings-icon settings-symbol settings-symbol-eye-open settings-icon-bright" aria-hidden="true"></span>
+            <span class="settings-main">畫面亮度</span>
+            <span class="settings-arrow">›</span>
+          </button>
+          <button class="settings-row" type="button" data-settings-page="offtime">
+            <span class="settings-icon settings-symbol settings-symbol-eye-close settings-icon-powersave" aria-hidden="true"></span>
+            <span class="settings-main">自動休眠</span>
+            <span class="settings-arrow">›</span>
+          </button>
+          <button class="settings-row" type="button" data-settings-page="volume">
+            <span class="settings-icon settings-symbol settings-symbol-audio settings-icon-sound" aria-hidden="true"></span>
+            <span class="settings-main">音量</span>
+            <span class="settings-arrow">›</span>
+          </button>
+          <button class="settings-row disabled" type="button" data-settings-page="level" disabled>
+            <span class="settings-icon settings-symbol settings-symbol-gps settings-icon-level" aria-hidden="true"></span>
+            <span class="settings-main">水平儀</span>
+          </button>
+          <button class="settings-row" type="button" data-settings-page="sdDetail">
+            <span class="settings-icon settings-img-icon settings-img-chip settings-icon-pmu" aria-hidden="true"></span>
+            <span class="settings-main">SD卡資訊</span>
+            <span class="settings-arrow">›</span>
+          </button>
+          <button class="settings-row" type="button" data-settings-page="about">
+            <span class="settings-icon settings-img-icon settings-img-watch settings-icon-about" aria-hidden="true"></span>
+            <span class="settings-main">關於設備</span>
+            <span class="settings-arrow">›</span>
+          </button>
+          <button class="settings-row" type="button" data-settings-page="devicePower">
+            <span class="settings-icon settings-symbol settings-symbol-power settings-icon-power" aria-hidden="true"></span>
+            <span class="settings-main">系統控制</span>
+            <span class="settings-arrow">›</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="settingsDetailScreen" class="screen-view settings-detail-screen" aria-label="設定子頁">
+        <div class="settings-statusbar" aria-hidden="true">
+          <span class="settings-status-time">00:00</span>
+          <span class="settings-status-batt"><span class="settings-batt-icon" aria-hidden="true"></span><span>--%</span></span>
+        </div>
+        <h1 id="settingsDetailTitle" class="settings-detail-title">設定</h1>
+        <div id="settingsDetailBody" class="settings-detail-body"></div>
+      </section>
+
+      <section id="bbpScreen" class="screen-view bbp-screen" aria-label="積分器連線測速">
+        <svg class="bbp-ring-svg" viewBox="0 0 370 452" aria-hidden="true">
+          <path class="bbp-ring-track ring-path" d="M185 3.5 H284 A82.5 82.5 0 0 1 366.5 86 V366 A82.5 82.5 0 0 1 284 448.5 H86 A82.5 82.5 0 0 1 3.5 366 V86 A82.5 82.5 0 0 1 86 3.5 H185"></path>
+          <path class="bbp-ring-progress ring-path ring-progress-path" d="M185 3.5 H284 A82.5 82.5 0 0 1 366.5 86 V366 A82.5 82.5 0 0 1 284 448.5 H86 A82.5 82.5 0 0 1 3.5 366 V86 A82.5 82.5 0 0 1 86 3.5 H185"></path>
+        </svg>
+
+        <section id="scanPage" class="page active" aria-label="積分器連線測速 掃描頁">
+        <div class="time-banner" data-page="scan">
+          <span class="time-icon" aria-hidden="true"></span>
+          <span id="scanBanner" class="time-text">00:00</span>
+        </div>
+        <div class="scan-card">
+          <div id="statusLine" class="scan-status"></div>
+          <div id="hintLine" class="scan-hint"></div>
+          <div id="macList" class="mac-list"></div>
+          <div id="detailPanel" class="detail-panel">
+            <div class="detail-mac-wrap">
+              <div class="detail-title">MAC位</div>
+              <div id="detailMac" class="detail-mac">--</div>
+            </div>
+            <div class="detail-divider"></div>
+            <div class="detail-stats">
+              <div class="detail-stat">
+                <div class="stat-label">最高速度</div>
+                <div id="detailMax" class="stat-value">0</div>
+              </div>
+              <div class="detail-stat">
+                <div class="stat-label">發射次</div>
+                <div id="detailShots" class="stat-value">0</div>
+              </div>
+            </div>
+            <button id="bindBtn" class="bind-btn" type="button">設為選定</button>
+          </div>
+          <div id="simPanel" class="sim-panel hidden" aria-label="積分器模擬連線">
+            <div id="simStatus" class="sim-status">次數 0｜廣播</div>
+            <div id="simDetail" class="sim-detail">送出 0｜收到 --</div>
+            <div class="sim-led-row" aria-hidden="true">
+              <div id="simLedAdv" class="sim-led"><span>廣播</span></div>
+              <div id="simLedSub" class="sim-led"><span>訂閱</span></div>
+              <div id="simLedPair" class="sim-led"><span>配對</span></div>
+              <div id="simLedTop" class="sim-led"><span>陀螺</span></div>
+            </div>
+            <div class="sim-btn-grid">
+              <div class="sim-btn-row">
+                <button id="simToggleBtn" class="sim-btn" type="button">廣播開</button>
+                <button id="simReadyBtn" class="sim-btn" type="button">等待App</button>
+              </div>
+              <div class="sim-btn-row">
+                <button id="simAttachBtn" class="sim-btn" type="button">陀螺未裝上</button>
+                <button id="simFireBtn" class="sim-btn" type="button">發射</button>
+              </div>
+              <button id="simBatchBtn" class="sim-btn sim-batch-btn" type="button">連發200</button>
+            </div>
+          </div>
+          <button id="primaryBtn" class="primary-btn" type="button">掃描</button>
+        </div>
+        <div class="page-nav" aria-hidden="true">
+          <span class="nav-item active"></span>
+          <span class="nav-item"></span>
+          <span class="nav-item"></span>
+          <span class="nav-item"></span>
+        </div>
+        </section>
+
+        <section id="livePage" class="page" aria-label="積分器連線測速 Live 頁">
+        <div class="time-banner" data-page="live">
+          <span class="time-icon" aria-hidden="true"></span>
+          <span id="liveBanner" class="time-text">00:00</span>
+        </div>
+        <div class="chip-row">
+          <div id="chipReady" class="chip ready">就位</div>
+          <div id="chipAtt" class="chip att">準備</div>
+          <div id="chipCalc" class="chip calc">計算</div>
+        </div>
+        <button id="liveBleBtn" class="live-ble-btn hidden" type="button"></button>
+        <div class="live-card">
+          <div class="mode-row">
+            <button id="modeBbp" class="mode-btn" type="button">官方認定</button>
+            <button id="modeAna" class="mode-btn active" type="button">實際計算</button>
+          </div>
+          <div id="liveRpm" class="rpm-value">0</div>
+          <div id="diagLabel" class="diag-label">判定: --</div>
+        </div>
+        <div class="stats-card">
+          <div id="liveStatTitle" class="stats-title">本機最大速度</div>
+          <div id="liveStatValue" class="stats-value">0</div>
+        </div>
+        <div class="page-nav" aria-hidden="true">
+          <span class="nav-item"></span>
+          <span class="nav-item active"></span>
+          <span class="nav-item"></span>
+          <span class="nav-item"></span>
+        </div>
+        </section>
+
+        <section id="histPage" class="page" aria-label="積分器連線測速 歷史頁">
+        <div class="time-banner" data-page="hist">
+          <span class="time-icon" aria-hidden="true"></span>
+          <span id="histBanner" class="time-text">00:00</span>
+        </div>
+        <div class="chip-row">
+          <div class="chip ready">就位</div>
+          <div class="chip att">準備</div>
+          <div class="chip calc">計算</div>
+        </div>
+        <div class="page-title">歷史轉速</div>
+        <div id="histListCard" class="hist-list-card">
+          <div class="hist-table">
+            <button id="histHead" class="hist-row head" type="button">
+              <span class="hist-no">次</span>
+              <span id="histHeadValue" class="hist-value">實際計算速度</span>
+            </button>
+            <div id="histRows"></div>
+          </div>
+        </div>
+        <div class="page-nav" aria-hidden="true">
+          <span class="nav-item"></span>
+          <span class="nav-item"></span>
+          <span class="nav-item active"></span>
+          <span class="nav-item"></span>
+        </div>
+        </section>
+
+        <section id="profilePage" class="page" aria-label="積分器連線測速 發射分析頁">
+        <div class="time-banner" data-page="profile">
+          <span class="time-icon" aria-hidden="true"></span>
+          <span id="profileBanner" class="time-text">00:00</span>
+        </div>
+        <div class="chip-row">
+          <div class="chip ready">就位</div>
+          <div class="chip att">準備</div>
+          <div class="chip calc">計算</div>
+        </div>
+        <div class="page-title">發射分析</div>
+        <div id="profileCard" class="profile-card">
+          <div class="profile-chart-wrap">
+            <div class="profile-axis">
+              <span>30000</span>
+              <span>25000</span>
+              <span>20000</span>
+              <span>15000</span>
+              <span>10000</span>
+              <span>5000</span>
+              <span>0</span>
+            </div>
+            <svg id="profileChartSvg" class="profile-chart" viewBox="0 0 271 244" aria-hidden="true"></svg>
+          </div>
+          <div id="profileDetail" class="profile-detail">
+            <div class="phase-row head">
+              <span>階段</span>
+              <span>時間(ms)</span>
+              <span>RPM</span>
+            </div>
+            <div id="phaseRows"></div>
+          </div>
+        </div>
+        <div class="page-nav" aria-hidden="true">
+          <span class="nav-item"></span>
+          <span class="nav-item"></span>
+          <span class="nav-item"></span>
+          <span class="nav-item active"></span>
+        </div>
+        </section>
+      </section>
+
+      <div id="homeHitbox" class="home-hitbox" aria-hidden="true">
+        <div class="home-pill"></div>
+      </div>
+      <div id="sleepOverlay" class="sleep-overlay" aria-label="螢幕休眠"></div>
+    </section>
+      </div>
+    </section>
+
+    <div class="side-rail">
+      <aside class="control-panel" aria-label="模擬控制">
+        <div class="control-button-row">
+          <button id="resetBtn" class="control-btn" type="button">重置</button>
+          <button id="mountBtn" class="control-btn warn" type="button" disabled>裝上</button>
+          <button id="shotBtn" class="control-btn warn" type="button" disabled>發射</button>
+        </div>
+        <button id="tutorialOpenBtn" class="control-btn primary tutorial-open-btn" type="button" aria-controls="tutorialPanel" aria-expanded="false">導航教學</button>
+      </aside>
+      <aside id="tutorialPanel" class="tutorial-panel hidden" aria-label="導航教學" aria-live="polite">
+        <div class="tutorial-head">
+          <div>
+            <div id="tutorialStepLabel" class="tutorial-step-label">第 1 / 1 步</div>
+            <h2 id="tutorialTitle" class="tutorial-title">導航教學</h2>
+          </div>
+          <button id="tutorialCloseBtn" class="tutorial-icon-btn" type="button" aria-label="收合導航教學">×</button>
+        </div>
+        <div id="tutorialBody" class="tutorial-body"></div>
+        <div id="tutorialChapterGrid" class="tutorial-chapters hidden"></div>
+        <div id="tutorialWaitHint" class="tutorial-wait-hint"></div>
+        <div id="tutorialBlockHint" class="tutorial-block-hint"></div>
+        <div class="tutorial-actions">
+          <button id="tutorialBackBtn" class="tutorial-btn secondary" type="button">上一步</button>
+          <button id="tutorialSkipBtn" class="tutorial-btn ghost" type="button">跳過</button>
+          <button id="tutorialNextBtn" class="tutorial-btn primary" type="button">下一步</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="tutorialHighlight" class="tutorial-highlight" aria-hidden="true"></div>
+  <script src="app.js?v=20260525_layout2"></script>
+</body>
+</html>

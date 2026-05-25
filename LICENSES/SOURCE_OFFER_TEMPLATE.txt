@@ -1,0 +1,31 @@
+SOURCE OFFER TEMPLATE (for LGPL components)
+===========================================
+
+Date:
+Product:
+Firmware version:
+Contact email: bq101043@gmail.com
+Website:
+
+This product build does not link against Arduino_DriveBus. It includes
+Arduino-ESP32 Core, treated as LGPL-2.1-or-later per upstream declaration.
+For recipients of this firmware package, corresponding source material for
+LGPL-covered components can be made available according to the distribution
+policy.
+
+Covered components:
+- Arduino-ESP32 Core (LGPL-2.1-or-later, as declared upstream)
+
+Request method:
+1. Send request to: bq101043@gmail.com
+2. Include product name, firmware version, and purchase/order reference
+3. Source archive delivery: download link or physical media at cost
+
+Archive contents should include:
+- Full corresponding source
+- Local modifications
+- Build instructions and toolchain versions
+- Any required scripts to reproduce binaries
+
+NOTE:
+Update this template with your legal contact and retention policy before release.

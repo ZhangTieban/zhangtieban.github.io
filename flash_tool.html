@@ -1,0 +1,441 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>燒錄工具 - 適用於戰鬥陀螺X轉速顯示裝置</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  .tool-grid{display:grid;gap:16px}
+  .tool-grid.two{grid-template-columns:repeat(2,1fr)}
+  .model-grid{display:grid;grid-template-columns:minmax(0,360px);gap:12px}
+  .model-card{
+    padding:14px;
+    border:none;
+    text-align:left;
+    border-radius:20px;
+    background:#0c1822;
+    border:2px solid rgba(255,255,255,.06);
+    color:var(--text);
+    cursor:pointer;
+    transition:.25s ease;
+  }
+  .model-card:hover{transform:translateY(-2px);border-color:rgba(73,226,255,.26)}
+  .model-card.selected{
+    border-color:var(--cool);
+    background:rgba(73,226,255,.06);
+    box-shadow:0 18px 40px rgba(73,226,255,.08);
+  }
+  .model-card img{
+    width:100%;
+    aspect-ratio:4/3;
+    object-fit:contain;
+    border-radius:16px;
+    background:linear-gradient(160deg, rgba(73,226,255,.08), rgba(255,150,77,.05));
+    padding:10px;
+    margin-bottom:12px;
+  }
+  .model-card strong{display:block;font-size:14px}
+  .device-info,.progress-wrap{display:none}
+  .device-info.show,.progress-wrap.show{display:block}
+  .device-info,.progress-wrap,.terminal-shell{
+    margin-top:14px;
+    padding:16px;
+    border-radius:18px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);
+  }
+  .action-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .btn-plain{border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text)}
+  .btn-danger{border:none;color:#fff;background:linear-gradient(135deg,#ff6a7f,#ff9b63);box-shadow:0 18px 40px rgba(255,106,127,.16)}
+  .btn-cool{border:none;color:#08131c;background:linear-gradient(135deg,var(--cool),#9be7ff);box-shadow:0 18px 40px rgba(73,226,255,.16)}
+  .action-row .btn,#connectBtn,#disconnectBtn{width:100%}
+  .btn[disabled]{opacity:.42;cursor:not-allowed;transform:none}
+  .device-row{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .device-row:last-child{border-bottom:none}
+  .device-row .label{color:var(--muted)}
+  .device-row .value{color:var(--cool);font-family:'Orbitron',sans-serif;font-size:12px;text-align:right}
+  .progress-bar{height:24px;border-radius:999px;background:#0c1822;overflow:hidden}
+  .progress-fill{width:0%;height:100%;border-radius:999px;background:linear-gradient(135deg,var(--cool),#6ff0c1);transition:width .25s ease;position:relative}
+  .progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.18) 50%,transparent 100%);animation:shimmer 1.5s linear infinite}
+  @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+  .progress-text{margin-top:10px;color:var(--muted)}
+  .progress-text span{color:var(--cool);font-family:'Orbitron',sans-serif}
+  .toggle-terminal{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0;border:none;background:none;color:var(--text);font-size:15px;font-weight:700;cursor:pointer}
+  .toggle-terminal svg{transition:transform .25s ease}
+  .toggle-terminal.open svg{transform:rotate(90deg)}
+  .terminal-shell{overflow:hidden;height:0;padding-top:0;padding-bottom:0;transition:height .3s ease,padding .3s ease}
+  .terminal-shell.open{height:300px;padding-top:16px;padding-bottom:16px}
+  .terminal-inner{height:252px;overflow:auto;border-radius:18px;padding:16px;background:#050b10;border:1px solid rgba(255,255,255,.06);font-family:'Cascadia Code','Fira Code',monospace;font-size:12px;line-height:1.75;color:#8de0ab}
+  .unsupported-overlay{display:none;position:fixed;inset:0;z-index:40;background:rgba(3,8,12,.92);place-items:center;padding:20px}
+  .unsupported-overlay.show{display:grid}
+  .unsupported-overlay .box{width:min(520px,100%);padding:28px}
+  @media (max-width:760px){.tool-grid.two,.model-grid,.action-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="unsupported-overlay" id="unsupportedOverlay">
+    <div class="card box">
+      <h2 style="margin-top:0;color:var(--bad);font-family:'Orbitron',sans-serif">瀏覽器不支援</h2>
+      <p class="note">這個頁面需要 Web Serial API。請使用 Google Chrome 89+ 或 Microsoft Edge 89+，並以 USB 資料線連接裝置。</p>
+      <p class="note">請改用支援 Web Serial 的瀏覽器開啟本頁。</p>
+    </div>
+  </div>
+
+  <div class="shell">
+    <main>
+      <div class="status-banner card" id="statusBanner">
+        <strong id="statusText"></strong>
+      </div>
+
+      <div class="tool-grid" id="flasher-flow">
+        <section class="card section-card">
+          <div class="model-grid" id="modelGrid">
+            <button class="model-card selected" data-model="amoled206" type="button">
+              <img src="images/ESP32-S3-Touch-AMOLED-2.06.png" alt="ESP32-S3-Touch-AMOLED-2.06">
+              <strong>ESP32-S3-Touch-AMOLED-2.06</strong>
+            </button>
+          </div>
+        </section>
+
+        <div class="tool-grid two">
+          <section class="card section-card">
+            <div class="section-heading">
+              <div><h2>1. 連接裝置</h2></div>
+              <p>使用 USB 資料線連接裝置後，即可建立串口連線 (USB/JTAG)。</p>
+            </div>
+            <div class="action-row" style="grid-template-columns:1fr">
+              <button class="btn btn-cool" id="connectBtn" type="button" disabled>連接裝置</button>
+              <button class="btn btn-plain" id="disconnectBtn" type="button" style="display:none">中斷連接</button>
+            </div>
+            <div class="device-info" id="deviceInfo">
+              <div class="device-row"><span class="label">晶片型號</span><span class="value" id="chipName">-</span></div>
+              <div class="device-row"><span class="label">MAC 位址</span><span class="value" id="macAddr">-</span></div>
+              <div class="device-row"><span class="label">Flash 大小</span><span class="value" id="flashSize">-</span></div>
+            </div>
+          </section>
+
+          <section class="card section-card">
+            <div class="section-heading">
+              <div><h2>2. 清除與燒錄</h2></div>
+              <p>授權板更新請直接開始燒錄，避免清除授權資料。</p>
+            </div>
+            <div class="action-row">
+              <button class="btn btn-danger" id="eraseBtn" type="button" disabled>清除已停用</button>
+              <button class="btn btn-cool" id="flashBtn" type="button" disabled>開始燒錄</button>
+            </div>
+            <div class="progress-wrap" id="progressWrap">
+              <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+              <div class="progress-text" id="progressText">準備中...</div>
+            </div>
+          </section>
+        </div>
+
+        <section class="card section-card" id="terminalCard">
+          <button class="toggle-terminal" id="termToggle" type="button">
+            <span>終端輸出紀錄</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <p class="note">如果燒錄失敗，這裡會保留錯誤訊息，方便你判斷是韌體路徑、裝置連線還是燒錄程序出了問題。</p>
+          <div class="terminal-shell" id="terminal">
+            <div class="terminal-inner" id="terminalInner">歡迎使用 適用於戰鬥陀螺X轉速顯示裝置<br>等待操作...<br></div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script type="module">
+  (async () => {
+    let ESPLoader;
+    let Transport;
+    try {
+      ({ ESPLoader, Transport } = await import('https://unpkg.com/esptool-js@0.5.4/bundle.js'));
+    } catch (error) {
+      const terminalInner = document.getElementById('terminalInner');
+      if (terminalInner) {
+        terminalInner.innerHTML += `<div style="color:#ff8095">[載入失敗] 無法載入 esptool-js：${error.message}</div>`;
+      }
+      console.error('Failed to load esptool-js bundle:', error);
+      return;
+    }
+
+    const FLASHER_BUILD = '2026-05-24 22:59';
+    const MODELS = {
+      amoled206: { name: 'ESP32-S3-Touch-AMOLED-2.06', file: 'firmware/ESP32-S3-Touch-AMOLED-2.06_app_20260525_2146.bin', description: '2.06 吋 AMOLED 主力版本', flashSize: '32MB', flashMode: 'dio', flashFreq: '80m', flashAddress: 0x10000 }
+    };
+
+    const $ = id => document.getElementById(id);
+    const modelCards = document.querySelectorAll('.model-card');
+    const connectBtn = $('connectBtn');
+    const disconnectBtn = $('disconnectBtn');
+    const eraseBtn = $('eraseBtn');
+    const flashBtn = $('flashBtn');
+    const deviceInfo = $('deviceInfo');
+    const chipName = $('chipName');
+    const macAddr = $('macAddr');
+    const flashSize = $('flashSize');
+    const progressWrap = $('progressWrap');
+    const progressFill = $('progressFill');
+    const progressText = $('progressText');
+    const termToggle = $('termToggle');
+    const terminal = $('terminal');
+    const terminalInner = $('terminalInner');
+    const statusBanner = $('statusBanner');
+    const statusText = $('statusText');
+    const unsupportedOverlay = $('unsupportedOverlay');
+
+    let selectedModel = MODELS.amoled206;
+    let esploader = null;
+    let transport = null;
+    let isConnected = false;
+    let isBusy = false;
+
+    const webSerialSupported = 'serial' in navigator;
+    if (!webSerialSupported) {
+      unsupportedOverlay.classList.add('show');
+    }
+
+    function log(message, color) {
+      const row = document.createElement('div');
+      const time = new Date().toLocaleTimeString('zh-TW', { hour12: false });
+      row.textContent = `[${time}] ${message}`;
+      row.style.color = color || '#8de0ab';
+      terminalInner.appendChild(row);
+      terminalInner.scrollTop = terminalInner.scrollHeight;
+    }
+
+    function showStatus(type, message) {
+      statusBanner.className = `status-banner card show ${type}`;
+      statusText.textContent = message;
+    }
+
+    function hideStatus() {
+      statusBanner.className = 'status-banner card';
+      statusText.textContent = '';
+    }
+
+    const espTerminal = {
+      clean() { terminalInner.innerHTML = ''; },
+      writeLine(data) { log(data); },
+      write(data) { log(data); }
+    };
+
+    function formatMacAddress(mac) {
+      if (!mac) return '無法讀取';
+      if (typeof mac === 'string') return mac.toUpperCase();
+      if (Array.isArray(mac) || ArrayBuffer.isView(mac)) {
+        return Array.from(mac, b => Number(b).toString(16).padStart(2, '0')).join(':').toUpperCase();
+      }
+      return '無法讀取';
+    }
+
+    function normalizeFirmwareData(input) {
+      if (input instanceof Uint8Array) return new Uint8Array(input);
+      if (input instanceof ArrayBuffer) return new Uint8Array(input);
+      if (ArrayBuffer.isView(input)) {
+        return new Uint8Array(input.buffer.slice(input.byteOffset, input.byteOffset + input.byteLength));
+      }
+      if (Array.isArray(input)) return Uint8Array.from(input);
+      if (typeof input === 'string') {
+        const bytes = new Uint8Array(input.length);
+        for (let i = 0; i < input.length; i++) bytes[i] = input.charCodeAt(i) & 0xff;
+        return bytes;
+      }
+      throw new Error(`不支援的韌體資料格式：${Object.prototype.toString.call(input)}`);
+    }
+
+    function toBinaryString(input) {
+      const bytes = normalizeFirmwareData(input);
+      const chunkSize = 0x8000;
+      let result = '';
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, i + chunkSize);
+        result += String.fromCharCode(...chunk);
+      }
+      return result;
+    }
+
+    function extractMacFromTerminal() {
+      const matches = terminalInner.textContent.match(/MAC:\s*([0-9a-f:]{17})/i);
+      return matches ? matches[1].toUpperCase() : null;
+    }
+
+    function refreshModelState() {
+      if (!selectedModel) {
+        connectBtn.disabled = true;
+        return;
+      }
+      if (!isConnected && !isBusy) connectBtn.disabled = false;
+    }
+
+    modelCards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (isBusy) return;
+        modelCards.forEach(item => item.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedModel = MODELS[card.dataset.model];
+        refreshModelState();
+        log(`已選擇機型：${selectedModel.name}`, '#56d5ff');
+      });
+    });
+
+    connectBtn.addEventListener('click', async () => {
+      if (!selectedModel || !webSerialSupported || isBusy) return;
+      hideStatus();
+      isBusy = true;
+      connectBtn.disabled = true;
+      connectBtn.textContent = '連接中...';
+      log('正在請求串口連接...', '#ffd267');
+
+      try {
+        const port = await navigator.serial.requestPort();
+        transport = new Transport(port, true);
+        esploader = new ESPLoader({ transport, baudrate: 115200, romBaudrate: 115200, terminal: espTerminal });
+        log('正在與 ESP32-S3 建立通訊...', '#ffd267');
+        const chip = await esploader.main();
+        chipName.textContent = chip;
+        flashSize.textContent = selectedModel.flashSize;
+        try {
+          const mac = await esploader.readMac();
+          macAddr.textContent = formatMacAddress(mac);
+        } catch (error) {
+          macAddr.textContent = extractMacFromTerminal() || '無法讀取';
+        }
+        macAddr.textContent = extractMacFromTerminal() || macAddr.textContent;
+        deviceInfo.classList.add('show');
+        connectBtn.style.display = 'none';
+        disconnectBtn.style.display = 'inline-flex';
+        eraseBtn.disabled = true;
+        flashBtn.disabled = false;
+        isConnected = true;
+        log(`裝置連接成功：${chip}`, '#79f7aa');
+        showStatus('success', `已成功連接到 ${chip}`);
+      } catch (error) {
+        log(`連接失敗：${error.message}`, '#ff8095');
+        showStatus('error', `連接失敗：${error.message}`);
+        connectBtn.disabled = false;
+      } finally {
+        isBusy = false;
+        if (!isConnected) connectBtn.textContent = '連接裝置';
+      }
+    });
+
+    disconnectBtn.addEventListener('click', async () => {
+      if (isBusy) return;
+      try {
+        if (transport) await transport.disconnect();
+      } catch (error) {
+        log(`中斷連接時發生訊息：${error.message}`, '#ffa75a');
+      }
+      isConnected = false;
+      esploader = null;
+      transport = null;
+      deviceInfo.classList.remove('show');
+      chipName.textContent = '-';
+      macAddr.textContent = '-';
+      flashSize.textContent = '-';
+      connectBtn.style.display = 'inline-flex';
+      connectBtn.textContent = '連接裝置';
+      connectBtn.disabled = !selectedModel;
+      disconnectBtn.style.display = 'none';
+      eraseBtn.disabled = true;
+      flashBtn.disabled = true;
+      hideStatus();
+      log('已中斷裝置連接', '#ffa75a');
+    });
+
+    eraseBtn.addEventListener('click', async () => {
+      if (!esploader || isBusy) return;
+      if (!confirm('確定要清除整個 Flash 嗎？此操作無法復原。')) return;
+      isBusy = true;
+      eraseBtn.disabled = true;
+      flashBtn.disabled = true;
+      log('開始清除 Flash...', '#ffd267');
+      showStatus('success', '正在清除 Flash，請稍候...');
+      try {
+        await esploader.eraseFlash();
+        log('Flash 清除完成', '#79f7aa');
+        showStatus('success', 'Flash 清除完成');
+      } catch (error) {
+        log(`清除失敗：${error.message}`, '#ff8095');
+        showStatus('error', `清除失敗：${error.message}`);
+      } finally {
+        isBusy = false;
+        eraseBtn.disabled = true;
+        flashBtn.disabled = false;
+      }
+    });
+
+    flashBtn.addEventListener('click', async () => {
+      if (!esploader || !selectedModel || isBusy) return;
+      isBusy = true;
+      flashBtn.disabled = true;
+      eraseBtn.disabled = true;
+      disconnectBtn.disabled = true;
+      hideStatus();
+      progressWrap.classList.add('show');
+      progressFill.style.width = '0%';
+      progressText.innerHTML = '正在讀取韌體檔案...';
+      log(`開始讀取韌體：${selectedModel.file}`, '#56d5ff');
+      try {
+        const response = await fetch(selectedModel.file);
+        if (!response.ok) {
+          throw new Error(`無法讀取 ${selectedModel.file} (HTTP ${response.status})，請確認 firmware 資料夾中已有對應檔案`);
+        }
+        const firmwareBuffer = await response.arrayBuffer();
+        const firmwareBytes = normalizeFirmwareData(firmwareBuffer);
+        const firmwareData = toBinaryString(firmwareBytes);
+        const sizeMB = (firmwareBytes.length / 1048576).toFixed(2);
+        progressText.innerHTML = `韌體大小：<span>${sizeMB} MB</span>`;
+        log(`韌體讀取完成，大小 ${sizeMB} MB`, '#79f7aa');
+        log(`韌體資料格式：BinaryString`, '#8bc2ff');
+        const flashOptions = {
+          fileArray: [{ data: firmwareData, address: selectedModel.flashAddress }],
+          flashSize: 'keep',
+          flashMode: 'keep',
+          flashFreq: 'keep',
+          eraseAll: false,
+          compress: true,
+          reportProgress: (_fileIndex, written, total) => {
+            const percent = Math.round((written / total) * 100);
+            progressFill.style.width = `${percent}%`;
+            progressText.innerHTML = `燒錄中... <span>${percent}%</span> (${(written / 1024).toFixed(0)}/${(total / 1024).toFixed(0)} KB)`;
+          }
+        };
+        log(`開始燒錄韌體到 0x${selectedModel.flashAddress.toString(16).toUpperCase()}...`, '#ffd267');
+        await esploader.writeFlash(flashOptions);
+        progressFill.style.width = '100%';
+        progressText.innerHTML = '燒錄完成 <span>100%</span>';
+        log('韌體燒錄成功', '#79f7aa');
+        showStatus('success', '韌體燒錄成功，請手動重新上電。');
+        log('燒錄完成，請手動重新上電', '#ffa75a');
+      } catch (error) {
+        log(`燒錄失敗：${error.message}`, '#ff8095');
+        progressText.innerHTML = '<span style="color:var(--bad)">燒錄失敗</span>';
+        showStatus('error', `燒錄失敗：${error.message}`);
+      } finally {
+        isBusy = false;
+        flashBtn.disabled = false;
+        eraseBtn.disabled = true;
+        disconnectBtn.disabled = false;
+      }
+    });
+
+    termToggle.addEventListener('click', () => {
+      terminal.classList.toggle('open');
+      termToggle.classList.toggle('open');
+    });
+
+    refreshModelState();
+    log(`頁面已就緒，已套用韌體：${selectedModel.name}`, '#8bc2ff');
+    log(`Flasher build: ${FLASHER_BUILD}`, '#8bc2ff');
+  })();
+  </script>
+</body>
+</html>

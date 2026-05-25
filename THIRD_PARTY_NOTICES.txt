@@ -1,0 +1,134 @@
+THIRD-PARTY SOFTWARE NOTICES
+
+Product name: 適用於戰鬥陀螺X轉速顯示裝置
+Firmware package: ESP32-S3-Touch-AMOLED-2.06 bundle
+Maintainer: ZhangTieban studio
+Last updated: 2026-05-20
+
+This product includes third-party components under open-source licenses
+and third-party copyright notices.
+
+================================================================
+Build baseline (audited)
+================================================================
+- Arduino-ESP32 Core: 3.3.7
+- LVGL: 9.3.0
+- SensorLib: 0.3.1
+- XPowersLib: 0.3.0
+- Arduino_GFX: 1.6.0
+- Source Han Sans SC font data
+- LVGL built-in Montserrat / Font Awesome font data
+
+================================================================
+1) Waveshare ESP32-S3-Touch-AMOLED-2.06 example repository
+================================================================
+License: Apache License 2.0
+Local license file: LICENSES/Apache-2.0.txt
+Notes:
+- Portions of this firmware are derived from the Waveshare example project.
+
+================================================================
+2) Arduino-ESP32 Core
+================================================================
+License: LGPL-2.1-or-later (as declared by upstream project)
+Local license file: LICENSES/LGPL-2.1.txt
+Notes:
+- Firmware is built with Arduino ESP32 core 3.3.7.
+- Keep source/offer workflow for copyleft obligations (see checklist).
+
+================================================================
+3) LVGL
+================================================================
+License: MIT
+Local license file: LICENSES/MIT-LVGL-9.3.0.txt
+
+================================================================
+4) SensorLib
+================================================================
+License: MIT
+Local license file: LICENSES/MIT-SensorLib-0.3.1.txt
+Additional notices:
+- SensorLib includes Bosch code under BSD-3-Clause in src/bosch.
+- See: LICENSES/SensorLib-THIRD_PARTY_NOTICES.md
+
+================================================================
+5) XPowersLib
+================================================================
+License: MIT
+Local license file: LICENSES/MIT-XPowersLib-0.3.0.txt
+
+================================================================
+6) Arduino_GFX
+================================================================
+License: BSD (upstream license.txt)
+Local license file: LICENSES/BSD-Arduino_GFX-license.txt
+
+================================================================
+7) es8311 codec files shipped in this source tree
+================================================================
+Files:
+- es8311.c
+- es8311.h
+- es8311_reg.h
+License: Apache License 2.0 (SPDX header in source files)
+Local license file: LICENSES/Apache-2.0.txt
+
+================================================================
+8) shark-minister atlas_bey core
+================================================================
+Source repository:
+- https://github.com/shark-minister/atlas_bey
+License:
+- MIT
+Local license file:
+- LICENSES/MIT-shark-minister-atlas_bey.txt
+Relevant integrated file:
+- analyzer_packet_logic.h
+Notes:
+- This project includes modified/integrated code derived from atlas_bey.
+- Keep upstream copyright and MIT permission notice in distributions.
+
+================================================================
+9) Fonts and UI symbols
+================================================================
+Components:
+- Source Han Sans SC
+- Montserrat
+- Font Awesome Free
+Licenses:
+- Source Han Sans SC: SIL Open Font License 1.1
+- Montserrat: SIL Open Font License 1.1
+- Font Awesome Free font files: SIL Open Font License 1.1
+- Font Awesome Free non-font files: MIT
+- Font Awesome Free SVG/JS icons: CC BY 4.0
+Local license files:
+- LICENSES/OFL-SourceHanSansSC.txt
+- LICENSES/OFL-Montserrat.txt
+- LICENSES/FontAwesome5-LICENSE.txt
+Notes:
+- This firmware embeds generated LVGL font bitmaps and LVGL symbols.
+- Keep font and icon attribution/license files in the distribution package.
+
+================================================================
+10) Product-side modifications
+================================================================
+Copyright:
+- Copyright (c) 2026 Zhang Tieban Studio
+Notes:
+- Integrations, bug fixes, UI work, hardware adaptation, and packaging.
+- FT3168 touch support is implemented in product-side source code and does
+  not link against Arduino_DriveBus.
+- This statement does not waive obligations from included third-party
+  components.
+
+================================================================
+11) Distribution package files
+================================================================
+Required files included in this firmware package:
+- THIRD_PARTY_NOTICES.txt
+- LICENSES/
+- docs/LIBRARIES.md
+- docs/OPEN_SOURCE_NOTICE_WEB.md
+
+Website publication recommendation:
+- Publish docs/OPEN_SOURCE_NOTICE_WEB.md on your legal page.

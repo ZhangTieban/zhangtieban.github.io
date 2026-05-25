@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>適用於戰鬥陀螺X轉速顯示裝置 - 授權文件</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d12;
+      --panel: #101820;
+      --panel-2: #141d26;
+      --panel-3: #0c131a;
+      --ink: #edf7ff;
+      --muted: #98aabd;
+      --line: rgba(160, 190, 220, 0.18);
+      --line-strong: rgba(78, 217, 255, 0.34);
+      --accent: #4ed9ff;
+      --accent-2: #86f2b5;
+      --warm: #ffad62;
+      --warn-bg: rgba(255, 173, 98, 0.12);
+      --info-bg: rgba(78, 217, 255, 0.10);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(145deg, #080d12 0%, #0d141b 48%, #080d12 100%);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 5px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      color: #d7f5ff;
+      font-size: 0.95em;
+    }
+
+    .page {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 48px;
+    }
+
+    .panel,
+    .doc-card,
+    .sidebar {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(16, 24, 32, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 318px minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 14px;
+      padding: 16px;
+      max-height: calc(100vh - 28px);
+      overflow: auto;
+    }
+
+    .sidebar h2,
+    .panel h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 42px;
+      margin-top: 12px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel-3);
+      color: var(--ink);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--line-strong);
+      box-shadow: 0 0 0 3px rgba(78, 217, 255, 0.10);
+    }
+
+    .doc-nav {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .doc-link {
+      display: grid;
+      gap: 4px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .doc-link:hover,
+    .doc-link.active {
+      border-color: var(--line-strong);
+      background: rgba(78, 217, 255, 0.09);
+      text-decoration: none;
+    }
+
+    .doc-link strong {
+      font-size: 13px;
+      line-height: 1.28;
+    }
+
+    .doc-link span {
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .content {
+      display: grid;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .doc-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .doc-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .action-btn {
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel-2);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      border-color: var(--line-strong);
+    }
+
+    .doc-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .doc-card {
+      overflow: hidden;
+      box-shadow: none;
+    }
+
+    .doc-card[hidden] {
+      display: none;
+    }
+
+    .doc-card summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      list-style: none;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .doc-card summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .doc-title {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .doc-title strong {
+      font-size: 15px;
+      line-height: 1.28;
+    }
+
+    .doc-title span {
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .doc-toggle {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .doc-card[open] .doc-toggle::before {
+      content: "收合";
+    }
+
+    .doc-card:not([open]) .doc-toggle::before {
+      content: "展開";
+    }
+
+    .doc-body-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 16px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .doc-body-head a {
+      font-weight: 800;
+    }
+
+    pre {
+      margin: 12px 16px 16px;
+      padding: 14px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #070b10;
+      color: #e7edf4;
+      font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 18px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .empty-state.show {
+      display: block;
+    }
+
+    @media (max-width: 920px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page {
+        width: min(100% - 20px, 1240px);
+        padding-top: 12px;
+      }
+
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="layout">
+      <aside class="sidebar" aria-label="文件導覽">
+        <h2>文件清單</h2>
+        <input class="search-input" id="docSearch" type="search" placeholder="搜尋文件或授權名稱" autocomplete="off">
+        <nav class="doc-nav" id="docNav"></nav>
+      </aside>
+
+      <div class="content">
+        <section class="panel">
+          <div class="doc-toolbar">
+            <h2>完整文件內容</h2>
+            <div class="doc-actions">
+              <button class="action-btn" id="expandAllBtn" type="button">全部展開</button>
+              <button class="action-btn" id="collapseAllBtn" type="button">全部收合</button>
+            </div>
+          </div>
+          <div class="doc-list" id="documentList"></div>
+          <div class="empty-state" id="emptyState">沒有符合搜尋的文件。</div>
+          <noscript>
+            此頁面需要 JavaScript 載入詳細文件內容。若瀏覽器停用 JavaScript，請使用文件連結逐一開啟。
+          </noscript>
+        </section>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const DOCUMENTS = [
+      { title: 'Third Party Notices', path: 'THIRD_PARTY_NOTICES.txt', note: '第三方元件總表與注意事項', open: false },
+      { title: 'Open Source Notice Markdown', path: 'docs/OPEN_SOURCE_NOTICE_WEB.md', note: '網站用開源聲明文字來源', open: false },
+      { title: 'Library Dependency List', path: 'docs/LIBRARIES.md', note: '目前韌體使用的第三方函式庫清單', open: false },
+      { title: 'Legal Notes', path: 'docs/PHASE10_4_LEGAL_NOTES_20260324.md', note: '開源合規整理與發佈檢查紀錄', open: false },
+      { title: 'License File Index', path: 'LICENSES/00_INDEX.md', note: 'LICENSES 目錄索引', open: false },
+      { title: 'Apache License 2.0', path: 'LICENSES/Apache-2.0.txt', note: 'Waveshare example / es8311 等 Apache-2.0 元件', open: false },
+      { title: 'LGPL 2.1', path: 'LICENSES/LGPL-2.1.txt', note: 'Arduino-ESP32 Core 授權文字', open: false },
+      { title: 'MIT - LVGL 9.3.0', path: 'LICENSES/MIT-LVGL-9.3.0.txt', note: 'LVGL 授權文字', open: false },
+      { title: 'MIT - SensorLib 0.3.1', path: 'LICENSES/MIT-SensorLib-0.3.1.txt', note: 'SensorLib 授權文字', open: false },
+      { title: 'SensorLib Third Party Notices', path: 'LICENSES/SensorLib-THIRD_PARTY_NOTICES.md', note: 'SensorLib 內含 Bosch BSD notice', open: false },
+      { title: 'MIT - XPowersLib 0.3.0', path: 'LICENSES/MIT-XPowersLib-0.3.0.txt', note: 'XPowersLib 授權文字', open: false },
+      { title: 'BSD - Arduino_GFX', path: 'LICENSES/BSD-Arduino_GFX-license.txt', note: 'Arduino_GFX 授權文字', open: false },
+      { title: 'MIT - shark-minister atlas_bey', path: 'LICENSES/MIT-shark-minister-atlas_bey.txt', note: 'atlas_bey 整合來源授權文字', open: false },
+      { title: 'OFL - Source Han Sans SC', path: 'LICENSES/OFL-SourceHanSansSC.txt', note: 'Source Han Sans SC 字型授權文字', open: false },
+      { title: 'OFL - Montserrat', path: 'LICENSES/OFL-Montserrat.txt', note: 'Montserrat 字型授權文字', open: false },
+      { title: 'Font Awesome 5 License', path: 'LICENSES/FontAwesome5-LICENSE.txt', note: 'Font Awesome Free 字型、圖示與非字型檔授權', open: false },
+      { title: 'Source Offer Template', path: 'LICENSES/SOURCE_OFFER_TEMPLATE.txt', note: 'Copyleft source request 範本', open: false }
+    ];
+
+    const docNav = document.getElementById('docNav');
+    const documentList = document.getElementById('documentList');
+    const docSearch = document.getElementById('docSearch');
+    const emptyState = document.getElementById('emptyState');
+    const expandAllBtn = document.getElementById('expandAllBtn');
+    const collapseAllBtn = document.getElementById('collapseAllBtn');
+
+    function normalize(text) {
+      return text.toLowerCase().replace(/\s+/g, ' ').trim();
+    }
+
+    function makeDocId(doc) {
+      return `doc-${doc.path.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()}`;
+    }
+
+    function createNavLink(doc) {
+      const link = document.createElement('a');
+      link.className = 'doc-link';
+      link.href = `#${doc.id}`;
+      link.dataset.docId = doc.id;
+      link.dataset.search = normalize(`${doc.title} ${doc.path} ${doc.note}`);
+
+      const title = document.createElement('strong');
+      title.textContent = doc.title;
+      const path = document.createElement('span');
+      path.textContent = doc.path;
+      link.append(title, path);
+      return link;
+    }
+
+    function createDocumentBlock(doc) {
+      const details = document.createElement('details');
+      details.className = 'doc-card';
+      details.id = doc.id;
+      details.dataset.search = normalize(`${doc.title} ${doc.path} ${doc.note}`);
+      details.open = doc.open;
+
+      const summary = document.createElement('summary');
+      const titleWrap = document.createElement('div');
+      titleWrap.className = 'doc-title';
+      const title = document.createElement('strong');
+      title.textContent = doc.title;
+      const note = document.createElement('span');
+      note.textContent = `${doc.note} / ${doc.path}`;
+      titleWrap.append(title, note);
+
+      const toggle = document.createElement('span');
+      toggle.className = 'doc-toggle';
+      summary.append(titleWrap, toggle);
+
+      const head = document.createElement('div');
+      head.className = 'doc-body-head';
+      const path = document.createElement('span');
+      path.textContent = doc.path;
+      const openLink = document.createElement('a');
+      openLink.href = doc.path;
+      openLink.textContent = '開啟原始文件';
+      head.append(path, openLink);
+
+      const pre = document.createElement('pre');
+      pre.textContent = 'Loading...';
+
+      details.append(summary, head, pre);
+
+      fetch(doc.path)
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.text();
+        })
+        .then(text => {
+          pre.textContent = text;
+        })
+        .catch(error => {
+          pre.textContent = `無法載入 ${doc.path}: ${error.message}`;
+        });
+
+      return details;
+    }
+
+    function syncActiveDoc(id) {
+      document.querySelectorAll('.doc-link').forEach(link => {
+        link.classList.toggle('active', link.dataset.docId === id);
+      });
+    }
+
+    function applyFilter() {
+      const query = normalize(docSearch.value);
+      let visibleCount = 0;
+
+      document.querySelectorAll('.doc-card, .doc-link').forEach(item => {
+        const visible = !query || item.dataset.search.includes(query);
+        item.hidden = !visible;
+        if (item.classList.contains('doc-card') && visible) visibleCount += 1;
+      });
+
+      emptyState.classList.toggle('show', visibleCount === 0);
+    }
+
+    DOCUMENTS.forEach(doc => {
+      doc.id = makeDocId(doc);
+      docNav.appendChild(createNavLink(doc));
+      documentList.appendChild(createDocumentBlock(doc));
+    });
+
+    docNav.addEventListener('click', event => {
+      const link = event.target.closest('.doc-link');
+      if (!link) return;
+      const target = document.getElementById(link.dataset.docId);
+      if (!target) return;
+      target.open = true;
+      syncActiveDoc(link.dataset.docId);
+    });
+
+    documentList.addEventListener('toggle', event => {
+      if (event.target.matches('.doc-card[open]')) syncActiveDoc(event.target.id);
+    }, true);
+
+    docSearch.addEventListener('input', applyFilter);
+
+    expandAllBtn.addEventListener('click', () => {
+      document.querySelectorAll('.doc-card:not([hidden])').forEach(doc => { doc.open = true; });
+    });
+
+    collapseAllBtn.addEventListener('click', () => {
+      document.querySelectorAll('.doc-card').forEach(doc => { doc.open = false; });
+    });
+
+    syncActiveDoc(DOCUMENTS[0].id);
+  </script>
+</body>
+</html>
