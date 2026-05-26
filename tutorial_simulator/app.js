@@ -900,13 +900,15 @@ function updateViewportScale() {
   const availableW = Math.max(260, vw - 20);
   const tutorialFocus = !!(state.tutorialActive && state.tutorialOpen && !state.tutorialDone);
   const tutorialPanelReserve = Math.min(214, Math.max(190, Math.round(vh * 0.28)));
+  const tutorialRailReserve = tutorialPanelReserve + 72;
   document.documentElement.style.setProperty("--tutorial-mobile-panel-h", tutorialPanelReserve + "px");
+  document.documentElement.style.setProperty("--tutorial-mobile-rail-h", tutorialRailReserve + "px");
   document.body?.style.setProperty("--tutorial-mobile-panel-h", tutorialPanelReserve + "px");
+  document.body?.style.setProperty("--tutorial-mobile-rail-h", tutorialRailReserve + "px");
   const compactMaxScale = tutorialFocus ? 0.66 : 0.88;
   const widthScale = Math.min(compactMaxScale, availableW / WATCH_STAGE_W);
-  const tutorialControlsNeeded = !!(document.body?.classList.contains("tutorial-controls-needed"));
   const titleReserve = tutorialFocus ? 34 : 44;
-  const railReserve = tutorialFocus ? (tutorialControlsNeeded ? tutorialPanelReserve + 72 : tutorialPanelReserve) : 118;
+  const railReserve = tutorialFocus ? tutorialRailReserve : 118;
   const verticalReserve = 18 + titleReserve + railReserve;
   const heightScale = Math.min(compactMaxScale, Math.max(0.42, (vh - verticalReserve) / SCREEN_H));
   const shouldFitHeight = tutorialFocus || vw > vh || vh < 620;

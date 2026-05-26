@@ -152,74 +152,45 @@
       }
 
       .topbar {
-        padding: 8px 10px 9px;
+        padding: 5px 10px 6px;
         position: relative;
         top: auto;
       }
 
       .topbar-inner {
-        gap: 7px;
+        gap: 4px;
       }
 
       .site-title {
-        font-size: clamp(17px, 5.4vw, 22px);
-        line-height: 1.15;
-      }
-
-      .mode-tabs {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        width: 100%;
-        gap: 4px;
-        padding: 4px;
-        border-radius: 8px;
-      }
-
-      .mode-tab {
-        min-height: 34px;
-        padding: 0 4px;
-        font-size: clamp(13px, 3.8vw, 16px);
-      }
-
-      .view-stage {
-        height: 100%;
-        min-height: 0;
-        padding: 8px 8px 10px;
-      }
-
-      .view-panel {
-        height: 100%;
-        min-height: 0;
-      }
-
-      body.mode-tutorial .topbar {
-        padding: 5px 10px 6px;
-      }
-
-      body.mode-tutorial .topbar-inner {
-        gap: 4px;
-      }
-
-      body.mode-tutorial .site-title {
         font-size: clamp(14px, 4.2vw, 17px);
         line-height: 1.08;
       }
 
-      body.mode-tutorial .mode-tabs {
+      .mode-tabs {
         display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
         gap: 2px;
         padding: 2px;
         border-radius: 7px;
       }
 
-      body.mode-tutorial .mode-tab {
+      .mode-tab {
         min-height: 25px;
         padding: 0 3px;
         font-size: clamp(11px, 3.2vw, 13px);
         line-height: 1;
       }
 
-      body.mode-tutorial .view-stage {
-        padding-top: 5px;
+      .view-stage {
+        height: 100%;
+        min-height: 0;
+        padding: 5px 8px 10px;
+      }
+
+      .view-panel {
+        height: 100%;
+        min-height: 0;
       }
 
     }
@@ -240,7 +211,7 @@
 
     <main class="view-stage">
       <section class="view-panel active" id="viewTutorial" data-panel="tutorial" aria-label="教學模擬">
-        <iframe class="embedded-page" src="tutorial_simulator/index.html?v=20260526_fitmobile2" title="教學模擬"></iframe>
+        <iframe class="embedded-page" src="tutorial_simulator/index.html?v=20260526_fixedsim1" title="教學模擬"></iframe>
       </section>
 
       <section class="view-panel" id="viewFlasher" data-panel="flasher" aria-label="燒錄工具">

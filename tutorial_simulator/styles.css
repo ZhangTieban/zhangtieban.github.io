@@ -3298,6 +3298,7 @@ button:disabled {
   }
   body.tutorial-focus {
     --tutorial-mobile-panel-h: 214px;
+    --tutorial-mobile-rail-h: 286px;
     min-height: 100svh;
     height: auto;
     overflow-y: auto;
@@ -3334,7 +3335,7 @@ button:disabled {
   body.tutorial-focus .side-rail {
     order: -1;
     margin-top: 0;
-    min-height: var(--tutorial-mobile-panel-h);
+    min-height: var(--tutorial-mobile-rail-h);
   }
   .control-panel {
     width: min(100%, var(--watch-screen-layout-w));
