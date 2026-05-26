@@ -419,11 +419,11 @@ const tutorialSteps = [
   {
     id: "scan",
     chapter: "mode",
-    title: "掃描發射機",
+    title: "掃描積分器",
     target: "#primaryBtn",
     pad: 8,
     lines: [
-      "掃描頁會尋找可連線的發射機。",
+      "掃描頁會尋找可連線的積分器。",
       "請按「掃描」，等待 MAC 清單出現。"
     ],
     waitText: "等待掃描結果",
@@ -437,7 +437,7 @@ const tutorialSteps = [
     pad: 8,
     lockControls: true,
     lines: [
-      "掃描完成後，這裡會列出附近可連線的發射機 MAC。",
+      "掃描完成後，這裡會列出附近可連線的積分器 MAC。",
       "右側數值是訊號強度，數值越接近 0 代表訊號越強。"
     ]
   },
@@ -448,7 +448,7 @@ const tutorialSteps = [
     target: "#macList .mac-row:not(.empty)",
     pad: 8,
     lines: [
-      "清單中的每一列都是一台發射機。",
+      "清單中的每一列都是一台積分器。",
       "請點一列 MAC，將它設為目前要連線的裝置。"
     ],
     waitText: "等待你選擇裝置",
@@ -464,7 +464,7 @@ const tutorialSteps = [
     lockControls: true,
     lines: [
       "選到 MAC 後，可查看該裝置的 MAC、最大速度與發射次數。",
-      "這裡用來確認目前準備連線的是哪一台發射機。"
+      "這裡用來確認目前準備連線的是哪一台積分器。"
     ]
   },
   {
@@ -475,7 +475,7 @@ const tutorialSteps = [
     pad: 8,
     lockControls: true,
     lines: [
-      "設為選定可把常用發射機做標記。",
+      "設為選定可把常用積分器做標記。",
       "之後重新掃描時，可更快辨識常用裝置。"
     ]
   },
@@ -1226,7 +1226,7 @@ function bleStatusText(mac = activeMac()) {
     case "scanning":
       return "掃描中...";
     case "scan_result":
-      return `找到 ${state.rows.length} 個發射機`;
+      return `找到 ${state.rows.length} 個積分器`;
     case "selected":
       return `已選擇${suffix}`;
     case "connect_pending":
