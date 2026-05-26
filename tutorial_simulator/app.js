@@ -501,8 +501,8 @@ const tutorialSteps = [
     target: "#mountBtn",
     pad: 8,
     lines: [
-      "右側控制列用來模擬硬體事件。",
-      "請按「裝上陀螺」，Live 頁會切換到等待發射。"
+      "下方控制列用來模擬硬體事件。",
+      "請按「裝上陀螺」，Live 頁會切換到準備狀態。"
     ],
     waitText: "等待你按下裝上陀螺",
     waitFor: "attached",
@@ -516,7 +516,8 @@ const tutorialSteps = [
     pad: 8,
     lines: [
       "裝上後，發射按鈕會啟用。",
-      "請按「發射陀螺」，看 Live RPM 與歷史資料更新。"
+      "請按「發射陀螺」，模擬接收 BLE 封包並顯示計算。",
+      "完成後會更新 Live RPM 與歷史資料。"
     ],
     waitText: "等待你完成一次發射",
     waitFor: "shotDone",
@@ -530,7 +531,7 @@ const tutorialSteps = [
     pad: 8,
     lines: [
       "Live 頁上方卡片可在目前時間與碼表之間切換。",
-      "卡片外框顏色依星期變化：日紫、一紅、二橘、三黃、四綠、五青、六藍。",
+      "碼表可用來測陀螺轉停時間、對戰時間等。",
       "請點擊上方時間卡，切換成碼表顯示。"
     ],
     waitText: "等待切換成碼表",
@@ -544,7 +545,7 @@ const tutorialSteps = [
     pad: 14,
     lines: [
       "右上側邊鍵可停止碼表。",
-      "碼表停止後，卡片會保留目前累積時間。"
+      "碼表停止後，會保留本次轉停或對戰計時結果。"
     ],
     waitText: "等待按下右上側邊鍵",
     waitFor: "timerStopped"
