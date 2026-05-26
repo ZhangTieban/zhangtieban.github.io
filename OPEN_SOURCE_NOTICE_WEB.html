@@ -81,12 +81,26 @@
       display: none;
     }
 
+    .license-summary-main {
+      min-width: 0;
+      display: grid;
+      gap: 5px;
+    }
+
     .license-title {
       min-width: 0;
       font-size: 15px;
       line-height: 1.35;
       font-weight: 850;
       color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+
+    .license-used {
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
       overflow-wrap: anywhere;
     }
 
@@ -171,16 +185,56 @@
 
   <script>
     const LICENSE_DOCUMENTS = [
-      { title: 'Apache License 2.0', path: 'LICENSES/Apache-2.0.txt' },
-      { title: 'LGPL 2.1', path: 'LICENSES/LGPL-2.1.txt' },
-      { title: 'MIT - LVGL 9.3.0', path: 'LICENSES/MIT-LVGL-9.3.0.txt' },
-      { title: 'MIT - SensorLib 0.3.1', path: 'LICENSES/MIT-SensorLib-0.3.1.txt' },
-      { title: 'MIT - XPowersLib 0.3.0', path: 'LICENSES/MIT-XPowersLib-0.3.0.txt' },
-      { title: 'BSD - Arduino_GFX', path: 'LICENSES/BSD-Arduino_GFX-license.txt' },
-      { title: 'MIT - shark-minister atlas_bey', path: 'LICENSES/MIT-shark-minister-atlas_bey.txt' },
-      { title: 'OFL - Source Han Sans SC', path: 'LICENSES/OFL-SourceHanSansSC.txt' },
-      { title: 'OFL - Montserrat', path: 'LICENSES/OFL-Montserrat.txt' },
-      { title: 'Font Awesome 5 License', path: 'LICENSES/FontAwesome5-LICENSE.txt' }
+      {
+        title: 'Apache License 2.0',
+        path: 'LICENSES/Apache-2.0.txt',
+        components: ['Waveshare ESP32-S3-Touch-AMOLED-2.06 example repository', 'es8311 files']
+      },
+      {
+        title: 'LGPL 2.1',
+        path: 'LICENSES/LGPL-2.1.txt',
+        components: ['Arduino-ESP32 Core 3.3.7']
+      },
+      {
+        title: 'MIT - LVGL 9.3.0',
+        path: 'LICENSES/MIT-LVGL-9.3.0.txt',
+        components: ['LVGL 9.3.0']
+      },
+      {
+        title: 'MIT - SensorLib 0.3.1',
+        path: 'LICENSES/MIT-SensorLib-0.3.1.txt',
+        components: ['SensorLib 0.3.1']
+      },
+      {
+        title: 'MIT - XPowersLib 0.3.0',
+        path: 'LICENSES/MIT-XPowersLib-0.3.0.txt',
+        components: ['XPowersLib 0.3.0']
+      },
+      {
+        title: 'BSD - Arduino_GFX',
+        path: 'LICENSES/BSD-Arduino_GFX-license.txt',
+        components: ['Arduino_GFX 1.6.0']
+      },
+      {
+        title: 'MIT - shark-minister atlas_bey',
+        path: 'LICENSES/MIT-shark-minister-atlas_bey.txt',
+        components: ['shark-minister atlas_bey core']
+      },
+      {
+        title: 'OFL - Source Han Sans SC',
+        path: 'LICENSES/OFL-SourceHanSansSC.txt',
+        components: ['Source Han Sans SC generated LVGL font bitmaps']
+      },
+      {
+        title: 'OFL - Montserrat',
+        path: 'LICENSES/OFL-Montserrat.txt',
+        components: ['Montserrat LVGL built-in font data']
+      },
+      {
+        title: 'Font Awesome 5 License',
+        path: 'LICENSES/FontAwesome5-LICENSE.txt',
+        components: ['Font Awesome Free LVGL symbol font data']
+      }
     ];
 
     const licenseList = document.getElementById('licenseList');
@@ -211,12 +265,18 @@
       card.className = 'license-card';
 
       const summary = document.createElement('summary');
+      const summaryMain = document.createElement('span');
+      summaryMain.className = 'license-summary-main';
       const title = document.createElement('span');
       title.className = 'license-title';
       title.textContent = doc.title;
+      const used = document.createElement('span');
+      used.className = 'license-used';
+      used.textContent = `使用：${doc.components.join('、')}`;
+      summaryMain.append(title, used);
       const toggle = document.createElement('span');
       toggle.className = 'license-toggle';
-      summary.append(title, toggle);
+      summary.append(summaryMain, toggle);
 
       const body = document.createElement('pre');
       body.className = 'loading';
