@@ -85,7 +85,7 @@ const settingsPageDefs = {
   devicePower: { title: "系統控制", parent: "settings" },
   factoryReset: { title: "重設設定", parent: "devicePower" }
 };
-const disabledSettingsPages = new Set(["level"]);
+const disabledSettingsPages = new Set(["level", "sdDetail"]);
 
 const settingsOpenSourceBody = [
   "- Arduino-ESP32 Core : LGPL-2.1-or-later",
@@ -828,8 +828,8 @@ const tutorialSteps = [
     pad: 6,
     lockControls: true,
     lines: [
-      "SD卡資訊可以查看記錄檔、容量與寫入狀態。",
-      "韌體目前把這個入口放在設定主頁。"
+      "SD卡資訊依目前程式包設定不啟動。",
+      "此列會以灰階顯示，且不能進入 SD卡資訊頁面。"
     ]
   },
   {
