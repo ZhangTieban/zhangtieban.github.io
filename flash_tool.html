@@ -11,34 +11,6 @@
 <style>
   .tool-grid{display:grid;gap:16px}
   .tool-grid.two{grid-template-columns:repeat(2,1fr)}
-  .model-grid{display:grid;grid-template-columns:minmax(0,360px);gap:12px}
-  .model-card{
-    padding:14px;
-    border:none;
-    text-align:left;
-    border-radius:20px;
-    background:#0c1822;
-    border:2px solid rgba(255,255,255,.06);
-    color:var(--text);
-    cursor:pointer;
-    transition:.25s ease;
-  }
-  .model-card:hover{transform:translateY(-2px);border-color:rgba(73,226,255,.26)}
-  .model-card.selected{
-    border-color:var(--cool);
-    background:rgba(73,226,255,.06);
-    box-shadow:0 18px 40px rgba(73,226,255,.08);
-  }
-  .model-card img{
-    width:100%;
-    aspect-ratio:4/3;
-    object-fit:contain;
-    border-radius:16px;
-    background:linear-gradient(160deg, rgba(73,226,255,.08), rgba(255,150,77,.05));
-    padding:10px;
-    margin-bottom:12px;
-  }
-  .model-card strong{display:block;font-size:14px}
   .device-info,.progress-wrap{display:none}
   .device-info.show,.progress-wrap.show{display:block}
   .device-info,.progress-wrap,.terminal-shell{
@@ -73,7 +45,7 @@
   .unsupported-overlay{display:none;position:fixed;inset:0;z-index:40;background:rgba(3,8,12,.92);place-items:center;padding:20px}
   .unsupported-overlay.show{display:grid}
   .unsupported-overlay .box{width:min(520px,100%);padding:28px}
-  @media (max-width:760px){.tool-grid.two,.model-grid,.action-row{grid-template-columns:1fr}}
+  @media (max-width:760px){.tool-grid.two,.action-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -92,15 +64,6 @@
       </div>
 
       <div class="tool-grid" id="flasher-flow">
-        <section class="card section-card">
-          <div class="model-grid" id="modelGrid">
-            <button class="model-card selected" data-model="amoled206" type="button">
-              <img src="images/ESP32-S3-Touch-AMOLED-2.06.png" alt="ESP32-S3-Touch-AMOLED-2.06">
-              <strong>ESP32-S3-Touch-AMOLED-2.06</strong>
-            </button>
-          </div>
-        </section>
-
         <div class="tool-grid two">
           <section class="card section-card">
             <div class="section-heading">
@@ -167,11 +130,10 @@
 
     const FLASHER_BUILD = '2026-05-24 22:59';
     const MODELS = {
-      amoled206: { name: 'ESP32-S3-Touch-AMOLED-2.06', file: 'firmware/ESP32-S3-Touch-AMOLED-2.06_app_20260525_2146.bin', description: '2.06 吋 AMOLED 主力版本', flashSize: '32MB', flashMode: 'dio', flashFreq: '80m', flashAddress: 0x10000 }
+      amoled206: { name: '授權版韌體', file: 'firmware/beyblade_speed_watch_app_20260525_2146.bin', description: '適用韌體', flashSize: '32MB', flashMode: 'dio', flashFreq: '80m', flashAddress: 0x10000 }
     };
 
     const $ = id => document.getElementById(id);
-    const modelCards = document.querySelectorAll('.model-card');
     const connectBtn = $('connectBtn');
     const disconnectBtn = $('disconnectBtn');
     const eraseBtn = $('eraseBtn');
@@ -274,17 +236,6 @@
       if (!isConnected && !isBusy) connectBtn.disabled = false;
     }
 
-    modelCards.forEach(card => {
-      card.addEventListener('click', () => {
-        if (isBusy) return;
-        modelCards.forEach(item => item.classList.remove('selected'));
-        card.classList.add('selected');
-        selectedModel = MODELS[card.dataset.model];
-        refreshModelState();
-        log(`已選擇機型：${selectedModel.name}`, '#56d5ff');
-      });
-    });
-
     connectBtn.addEventListener('click', async () => {
       if (!selectedModel || !webSerialSupported || isBusy) return;
       hideStatus();
@@ -382,11 +333,11 @@
       progressWrap.classList.add('show');
       progressFill.style.width = '0%';
       progressText.innerHTML = '正在讀取韌體檔案...';
-      log(`開始讀取韌體：${selectedModel.file}`, '#56d5ff');
+      log('開始讀取韌體檔案...', '#56d5ff');
       try {
         const response = await fetch(selectedModel.file);
         if (!response.ok) {
-          throw new Error(`無法讀取 ${selectedModel.file} (HTTP ${response.status})，請確認 firmware 資料夾中已有對應檔案`);
+          throw new Error(`無法讀取韌體檔案 (HTTP ${response.status})，請確認 firmware 資料夾中已有對應檔案`);
         }
         const firmwareBuffer = await response.arrayBuffer();
         const firmwareBytes = normalizeFirmwareData(firmwareBuffer);
@@ -433,7 +384,7 @@
     });
 
     refreshModelState();
-    log(`頁面已就緒，已套用韌體：${selectedModel.name}`, '#8bc2ff');
+    log(`頁面已就緒，已套用：${selectedModel.name}`, '#8bc2ff');
     log(`Flasher build: ${FLASHER_BUILD}`, '#8bc2ff');
   })();
   </script>
