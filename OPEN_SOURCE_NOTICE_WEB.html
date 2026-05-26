@@ -66,14 +66,47 @@
       box-shadow: none;
     }
 
-    .license-card h2 {
-      margin: 0;
+    .license-card summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
       padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
+      list-style: none;
+      cursor: pointer;
       background: rgba(255, 255, 255, 0.035);
+    }
+
+    .license-card summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .license-title {
+      min-width: 0;
       font-size: 15px;
       line-height: 1.35;
+      font-weight: 850;
       color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+
+    .license-toggle {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .license-toggle::before {
+      content: "展開";
+    }
+
+    .license-card[open] .license-toggle::before {
+      content: "收合";
+    }
+
+    .license-card[open] summary {
+      border-bottom: 1px solid var(--line);
     }
 
     pre {
@@ -111,8 +144,11 @@
         font-size: 19px;
       }
 
-      .license-card h2 {
+      .license-card summary {
         padding: 10px 12px;
+      }
+
+      .license-title {
         font-size: 14px;
       }
 
@@ -149,18 +185,11 @@
 
     const licenseList = document.getElementById('licenseList');
 
-    function createLicenseCard(doc) {
-      const card = document.createElement('article');
-      card.className = 'license-card';
-
-      const title = document.createElement('h2');
-      title.textContent = doc.title;
-
-      const body = document.createElement('pre');
+    function loadLicenseBody(doc, body) {
+      if (body.dataset.loaded === 'true') return;
+      body.dataset.loaded = 'true';
       body.className = 'loading';
       body.textContent = 'Loading...';
-
-      card.append(title, body);
 
       fetch(doc.path)
         .then(response => {
@@ -175,6 +204,28 @@
           body.className = 'error';
           body.textContent = `無法載入授權文件：${error.message}`;
         });
+    }
+
+    function createLicenseCard(doc) {
+      const card = document.createElement('details');
+      card.className = 'license-card';
+
+      const summary = document.createElement('summary');
+      const title = document.createElement('span');
+      title.className = 'license-title';
+      title.textContent = doc.title;
+      const toggle = document.createElement('span');
+      toggle.className = 'license-toggle';
+      summary.append(title, toggle);
+
+      const body = document.createElement('pre');
+      body.className = 'loading';
+      body.textContent = 'Loading...';
+
+      card.append(summary, body);
+      card.addEventListener('toggle', () => {
+        if (card.open) loadLicenseBody(doc, body);
+      });
 
       return card;
     }
