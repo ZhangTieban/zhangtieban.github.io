@@ -146,15 +146,24 @@
       body { overflow: hidden; }
 
       .app-shell {
+        --mobile-tabs-h: 52px;
+        display: block;
         height: 100vh;
         height: 100dvh;
         min-height: 100svh;
+        padding-bottom: calc(var(--mobile-tabs-h) + env(safe-area-inset-bottom));
       }
 
       .topbar {
-        padding: 5px 10px 6px;
-        position: relative;
+        position: fixed;
+        left: 0;
+        right: 0;
         top: auto;
+        bottom: 0;
+        z-index: 50;
+        padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+        border-top: 1px solid rgba(255, 255, 255, 0.10);
+        border-bottom: 0;
       }
 
       .topbar-inner {
@@ -162,30 +171,29 @@
       }
 
       .site-title {
-        font-size: clamp(14px, 4.2vw, 17px);
-        line-height: 1.08;
+        display: none;
       }
 
       .mode-tabs {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         width: 100%;
-        gap: 2px;
-        padding: 2px;
-        border-radius: 7px;
+        gap: 4px;
+        padding: 3px;
+        border-radius: 8px;
       }
 
       .mode-tab {
-        min-height: 25px;
-        padding: 0 3px;
-        font-size: clamp(11px, 3.2vw, 13px);
+        min-height: 34px;
+        padding: 0 4px;
+        font-size: clamp(12px, 3.5vw, 14px);
         line-height: 1;
       }
 
       .view-stage {
-        height: 100%;
+        height: calc(100dvh - var(--mobile-tabs-h) - env(safe-area-inset-bottom));
         min-height: 0;
-        padding: 5px 8px 10px;
+        padding: 6px 8px 8px;
       }
 
       .view-panel {
