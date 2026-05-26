@@ -35,6 +35,9 @@ const screenEls = {
 const SCREEN_W = 410;
 const SCREEN_H = 502;
 const WATCH_STAGE_W = 462;
+const MOBILE_TUTORIAL_PANEL_H = 214;
+const MOBILE_TUTORIAL_CONTROL_RESERVE_H = 64;
+const MOBILE_TUTORIAL_RAIL_GAP = 8;
 const HOME_SWIPE_MIN_DY = 38;
 const HOME_SWIPE_EARLY_DY = 28;
 const HOME_SWIPE_MAX_DX_BASE = 12;
@@ -902,11 +905,15 @@ function updateViewportScale() {
 
   const availableW = Math.max(260, vw - 20);
   const tutorialFocus = !!(state.tutorialActive && state.tutorialOpen && !state.tutorialDone);
-  const tutorialPanelReserve = Math.min(214, Math.max(190, Math.round(vh * 0.28)));
-  const tutorialRailReserve = tutorialPanelReserve + 72;
+  const tutorialPanelReserve = MOBILE_TUTORIAL_PANEL_H;
+  const tutorialRailReserve = MOBILE_TUTORIAL_PANEL_H + MOBILE_TUTORIAL_CONTROL_RESERVE_H + MOBILE_TUTORIAL_RAIL_GAP;
   document.documentElement.style.setProperty("--tutorial-mobile-panel-h", tutorialPanelReserve + "px");
+  document.documentElement.style.setProperty("--tutorial-mobile-control-reserve-h", MOBILE_TUTORIAL_CONTROL_RESERVE_H + "px");
+  document.documentElement.style.setProperty("--tutorial-mobile-rail-gap", MOBILE_TUTORIAL_RAIL_GAP + "px");
   document.documentElement.style.setProperty("--tutorial-mobile-rail-h", tutorialRailReserve + "px");
   document.body?.style.setProperty("--tutorial-mobile-panel-h", tutorialPanelReserve + "px");
+  document.body?.style.setProperty("--tutorial-mobile-control-reserve-h", MOBILE_TUTORIAL_CONTROL_RESERVE_H + "px");
+  document.body?.style.setProperty("--tutorial-mobile-rail-gap", MOBILE_TUTORIAL_RAIL_GAP + "px");
   document.body?.style.setProperty("--tutorial-mobile-rail-h", tutorialRailReserve + "px");
   const compactMaxScale = tutorialFocus ? 0.66 : 0.88;
   const widthScale = Math.min(compactMaxScale, availableW / WATCH_STAGE_W);
@@ -3560,7 +3567,10 @@ function revealTutorialTarget(step) {
   const target = document.querySelector(step.target);
   const list = target?.closest(".settings-list");
   if (!target || !list) return;
-  target.scrollIntoView({ block: "center", inline: "nearest" });
+  const listRect = list.getBoundingClientRect();
+  const targetRect = target.getBoundingClientRect();
+  const targetCenter = targetRect.top - listRect.top + list.scrollTop + targetRect.height / 2;
+  list.scrollTop = Math.max(0, Math.round(targetCenter - list.clientHeight / 2));
   tutorialRevealStepId = step.id;
 }
 
@@ -4050,7 +4060,7 @@ function renderTutorial() {
   const controlsChanged = document.body && document.body.classList.contains("tutorial-controls-needed") !== shouldShowControls;
   document.body?.classList.toggle("tutorial-focus", shouldFocusTutorial);
   document.body?.classList.toggle("tutorial-controls-needed", shouldShowControls);
-  if (shouldFocusTutorial) window.scrollTo(0, 0);
+  if (shouldFocusTutorial && focusChanged) window.scrollTo(0, 0);
   if (focusChanged || controlsChanged) updateViewportScale();
   panel.classList.toggle("hidden", !state.tutorialOpen || !active);
   panel.classList.toggle("chapter-menu", !!step?.chapterMenu);

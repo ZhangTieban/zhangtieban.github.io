@@ -34,6 +34,9 @@
   --watch-screen-layout-w: 410px;
   --watch-screen-center-shift: 0px;
   --tutorial-panel-layout-w: 520px;
+  --tutorial-mobile-panel-fixed-h: 214px;
+  --tutorial-mobile-control-reserve-h: 64px;
+  --tutorial-mobile-rail-gap: 8px;
   --side-button-hit-w: 64px;
   --side-button-hit-h: 118px;
   --side-button-hit-outset: 52px;
@@ -3065,6 +3068,9 @@ button:disabled {
   background: #101820;
   border-radius: 8px;
   padding: 14px;
+  height: 360px;
+  max-height: min(360px, calc(100svh - 64px));
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -3112,9 +3118,13 @@ button:disabled {
 }
 
 .tutorial-body {
+  flex: 1 1 auto;
   display: grid;
+  align-content: start;
   gap: 8px;
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   touch-action: pan-y;
 }
 
@@ -3127,9 +3137,13 @@ button:disabled {
 }
 
 .tutorial-chapters {
+  flex: 1 1 auto;
   display: grid;
+  align-content: start;
   gap: 8px;
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   touch-action: pan-y;
 }
 
@@ -3297,8 +3311,8 @@ button:disabled {
     place-items: start center;
   }
   body.tutorial-focus {
-    --tutorial-mobile-panel-h: 214px;
-    --tutorial-mobile-rail-h: 286px;
+    --tutorial-mobile-panel-h: var(--tutorial-mobile-panel-fixed-h);
+    --tutorial-mobile-rail-h: calc(var(--tutorial-mobile-panel-fixed-h) + var(--tutorial-mobile-control-reserve-h) + var(--tutorial-mobile-rail-gap));
     min-height: 100svh;
     height: 100svh;
     overflow: hidden;
@@ -3311,10 +3325,17 @@ button:disabled {
     gap: 12px;
   }
   body.tutorial-focus .layout {
+    height: 100%;
+    min-height: 0;
+    grid-template-rows: auto var(--tutorial-mobile-rail-h);
+    align-content: start;
     gap: 6px;
+    overflow: hidden;
   }
   body.tutorial-focus .watch-stage {
     align-items: center;
+    flex: 0 0 auto;
+    min-height: 0;
     gap: 8px;
     order: 0;
   }
@@ -3336,8 +3357,12 @@ button:disabled {
   body.tutorial-focus .side-rail {
     order: 1;
     width: min(100%, var(--tutorial-panel-layout-w));
-    margin-top: 0;
+    height: var(--tutorial-mobile-rail-h);
     min-height: var(--tutorial-mobile-rail-h);
+    max-height: var(--tutorial-mobile-rail-h);
+    margin-top: 0;
+    gap: var(--tutorial-mobile-rail-gap);
+    overflow: hidden;
     transform: none;
   }
   .control-panel {
@@ -3351,8 +3376,12 @@ button:disabled {
   body.tutorial-focus.tutorial-controls-needed .control-panel {
     order: 2;
     width: min(100%, var(--tutorial-panel-layout-w));
+    height: var(--tutorial-mobile-control-reserve-h);
+    min-height: var(--tutorial-mobile-control-reserve-h);
+    flex: 0 0 var(--tutorial-mobile-control-reserve-h);
     padding: 8px;
     gap: 0;
+    overflow: hidden;
   }
   body.tutorial-focus.tutorial-controls-needed .control-button-row {
     gap: 6px;
@@ -3377,6 +3406,7 @@ button:disabled {
   body.tutorial-focus .tutorial-panel {
     order: 1;
     width: min(100%, var(--tutorial-panel-layout-w));
+    flex: 0 0 var(--tutorial-mobile-panel-h);
     padding: 8px;
     gap: 5px;
     height: var(--tutorial-mobile-panel-h);
