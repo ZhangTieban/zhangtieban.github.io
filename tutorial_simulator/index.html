@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>教學模擬 - 適用於戰鬥陀螺X轉速顯示裝置</title>
-  <link rel="stylesheet" href="styles.css?v=20260527_controlbottom1">
+  <link rel="stylesheet" href="styles.css?v=20260527_textonly1">
 </head>
 <body>
   <main class="layout">
@@ -304,16 +304,15 @@
       </div>
     </section>
 
-    <aside class="control-panel" aria-label="模擬控制">
-      <div class="control-button-row">
-        <button id="resetBtn" class="control-btn" type="button">重置</button>
-        <button id="mountBtn" class="control-btn warn" type="button" disabled>裝上</button>
-        <button id="shotBtn" class="control-btn warn" type="button" disabled>發射</button>
-      </div>
-      <button id="tutorialOpenBtn" class="control-btn primary tutorial-open-btn" type="button" aria-controls="tutorialPanel" aria-expanded="false">導航教學</button>
-    </aside>
-
     <div class="side-rail">
+      <aside class="control-panel" aria-label="模擬控制">
+        <div class="control-button-row">
+          <button id="resetBtn" class="control-btn" type="button">重置</button>
+          <button id="mountBtn" class="control-btn warn" type="button" disabled>裝上</button>
+          <button id="shotBtn" class="control-btn warn" type="button" disabled>發射</button>
+        </div>
+        <button id="tutorialOpenBtn" class="control-btn primary tutorial-open-btn" type="button" aria-controls="tutorialPanel" aria-expanded="false">導航教學</button>
+      </aside>
       <aside id="tutorialPanel" class="tutorial-panel hidden" aria-label="導航教學" aria-live="polite">
         <div class="tutorial-head">
           <div>
@@ -336,6 +335,6 @@
   </main>
 
   <div id="tutorialHighlight" class="tutorial-highlight" aria-hidden="true"></div>
-  <script src="app.js?v=20260527_controlbottom1"></script>
+  <script src="app.js?v=20260527_textonly1"></script>
 </body>
 </html>
