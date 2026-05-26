@@ -918,7 +918,7 @@ function updateViewportScale() {
   const stageWidth = Math.ceil(WATCH_STAGE_W * scale);
   const screenWidth = Math.ceil(SCREEN_W * scale);
   const screenCenterShift = Math.max(0, Math.round((stageWidth - screenWidth) / 2));
-  const panelWidth = Math.min(availableW, Math.max(screenWidth, Math.min(320, availableW)));
+  const panelWidth = tutorialFocus ? availableW : Math.min(availableW, Math.max(screenWidth, Math.min(320, availableW)));
   document.documentElement.style.setProperty("--watch-scale", scale.toFixed(4));
   document.documentElement.style.setProperty("--watch-stage-layout-w", stageWidth + "px");
   document.documentElement.style.setProperty("--watch-panel-layout-w", Math.ceil(panelWidth) + "px");
@@ -4047,6 +4047,7 @@ function renderTutorial() {
   const controlsChanged = document.body && document.body.classList.contains("tutorial-controls-needed") !== shouldShowControls;
   document.body?.classList.toggle("tutorial-focus", shouldFocusTutorial);
   document.body?.classList.toggle("tutorial-controls-needed", shouldShowControls);
+  if (shouldFocusTutorial) window.scrollTo(0, 0);
   if (focusChanged || controlsChanged) updateViewportScale();
   panel.classList.toggle("hidden", !state.tutorialOpen || !active);
   panel.classList.toggle("chapter-menu", !!step?.chapterMenu);
