@@ -77,8 +77,8 @@
 
     .mode-tabs {
       display: grid;
-      grid-template-columns: repeat(3, minmax(104px, 1fr));
-      width: min(520px, 100%);
+      grid-template-columns: repeat(4, minmax(88px, 1fr));
+      width: min(640px, 100%);
       gap: 8px;
       padding: 6px;
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -176,7 +176,7 @@
 
       .mode-tabs {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         width: 100%;
         gap: 4px;
         padding: 3px;
@@ -211,6 +211,7 @@
         <h1 class="site-title">適用於戰鬥陀螺X轉速顯示裝置</h1>
         <nav class="mode-tabs" aria-label="網頁模式切換">
           <button class="mode-tab active" type="button" data-view="tutorial" aria-controls="viewTutorial">教學模擬</button>
+          <button class="mode-tab" type="button" data-view="videos" aria-controls="viewVideos">影片教學</button>
           <button class="mode-tab" type="button" data-view="flasher" aria-controls="viewFlasher">燒錄工具</button>
           <button class="mode-tab" type="button" data-view="license" aria-controls="viewLicense">授權文件</button>
         </nav>
@@ -220,6 +221,10 @@
     <main class="view-stage">
       <section class="view-panel active" id="viewTutorial" data-panel="tutorial" aria-label="教學模擬">
         <iframe class="embedded-page" src="tutorial_simulator/index.html?v=20260527_fixedsim1" title="教學模擬"></iframe>
+      </section>
+
+      <section class="view-panel" id="viewVideos" data-panel="videos" aria-label="影片教學">
+        <iframe class="embedded-page" src="videos/index.html?v=20260528_video1" title="影片教學"></iframe>
       </section>
 
       <section class="view-panel" id="viewFlasher" data-panel="flasher" aria-label="燒錄工具">
@@ -237,6 +242,7 @@
     const panels = Array.from(document.querySelectorAll('.view-panel'));
     const modeLabels = {
       tutorial: '教學模擬',
+      videos: '影片教學',
       flasher: '燒錄工具',
       license: '授權文件'
     };
@@ -252,6 +258,7 @@
         panel.classList.toggle('active', panel.dataset.panel === nextMode);
       });
       document.body.classList.toggle('mode-tutorial', nextMode === 'tutorial');
+      document.body.classList.toggle('mode-videos', nextMode === 'videos');
       document.body.classList.toggle('mode-flasher', nextMode === 'flasher');
       document.body.classList.toggle('mode-license', nextMode === 'license');
       document.title = `${modeLabels[nextMode]} - 適用於戰鬥陀螺X轉速顯示裝置`;

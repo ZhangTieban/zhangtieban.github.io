@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>影片教學 - 適用於戰鬥陀螺X轉速顯示裝置</title>
+  <style>
+    :root {
+      --bg: #081018;
+      --panel: #101923;
+      --panel-2: #151f29;
+      --line: #2a3b4d;
+      --text: #edf7ff;
+      --muted: #91a9bd;
+      --accent: #57dfff;
+      --warm: #ffb05d;
+      --shadow: 0 18px 58px rgba(0, 0, 0, 0.34);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 14% 0%, rgba(87, 223, 255, 0.12), transparent 28%),
+        radial-gradient(circle at 92% 18%, rgba(255, 176, 93, 0.10), transparent 24%),
+        linear-gradient(145deg, #070b10 0%, #0b141d 55%, #070b10 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1120px, 100%);
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: 22px 18px 28px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .title-group {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .home-link {
+      flex: 0 0 auto;
+      min-height: 38px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.045);
+      font-weight: 750;
+    }
+
+    .video-card,
+    .details {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(16, 25, 35, 0.86);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .video-wrap {
+      background: #000;
+    }
+
+    video {
+      display: block;
+      width: 100%;
+      max-height: min(68vh, 680px);
+      background: #000;
+    }
+
+    .video-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.035);
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .video-meta strong {
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .video-meta span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+      text-align: right;
+    }
+
+    .details {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .details h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    .step-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .step-list li {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      background: var(--panel-2);
+      color: #d9ebf7;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .step-list b {
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: #061018;
+      background: var(--warm);
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 12px 10px 18px;
+        gap: 10px;
+      }
+
+      .header {
+        align-items: start;
+      }
+
+      h1 {
+        font-size: clamp(21px, 7vw, 28px);
+      }
+
+      .home-link {
+        min-height: 34px;
+        padding: 0 10px;
+        font-size: 13px;
+      }
+
+      video {
+        max-height: 58vh;
+      }
+
+      .video-meta {
+        align-items: start;
+        flex-direction: column;
+        padding: 12px;
+      }
+
+      .video-meta span {
+        text-align: left;
+      }
+
+      .details {
+        padding: 12px;
+      }
+
+      .step-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <div class="title-group">
+        <div class="eyebrow">影片教學</div>
+        <h1>電池與錶帶安裝</h1>
+      </div>
+      <a class="home-link" href="../#tutorial" target="_top">返回教學</a>
+    </header>
+
+    <section class="video-card" aria-label="電池與錶帶安裝影片">
+      <div class="video-wrap">
+        <video controls playsinline preload="metadata" poster="battery-install-poster.png">
+          <source src="battery-install-esp32-s3-touch-amoled-206.mp4" type="video/mp4">
+          你的瀏覽器不支援影片播放。
+        </video>
+      </div>
+      <div class="video-meta">
+        <strong>ESP32-S3-Touch-AMOLED-2.06 安裝流程</strong>
+        <span>硬字幕版，約 2 分 46 秒</span>
+      </div>
+    </section>
+
+    <section class="details" aria-label="影片章節">
+      <h2>章節</h2>
+      <ol class="step-list">
+        <li><b>1</b><span>確認內容物</span></li>
+        <li><b>2</b><span>拆下背面螺絲</span></li>
+        <li><b>3</b><span>接上電池</span></li>
+        <li><b>4</b><span>開機檢查</span></li>
+        <li><b>5</b><span>合蓋並鎖回螺絲</span></li>
+        <li><b>6</b><span>安裝兩段錶帶</span></li>
+      </ol>
+    </section>
+  </main>
+</body>
+</html>
