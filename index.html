@@ -88,6 +88,7 @@
     }
 
     .mode-tab {
+      min-width: 0;
       min-height: 38px;
       border: 1px solid transparent;
       border-radius: 7px;
@@ -96,7 +97,13 @@
       font: inherit;
       font-weight: 750;
       cursor: pointer;
+      overflow: hidden;
+      white-space: nowrap;
       transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+
+    .tab-label-short {
+      display: none;
     }
 
     .mode-tab:hover {
@@ -161,13 +168,18 @@
         top: auto;
         bottom: 0;
         z-index: 50;
-        padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
-        border-top: 1px solid rgba(255, 255, 255, 0.10);
-        border-bottom: 0;
+        height: calc(var(--mobile-tabs-h) + env(safe-area-inset-bottom));
+        padding: 0;
+        border: 0;
+        background: transparent;
+        backdrop-filter: none;
+        pointer-events: none;
       }
 
       .topbar-inner {
-        gap: 4px;
+        width: auto;
+        margin: 0;
+        display: block;
       }
 
       .site-title {
@@ -177,17 +189,32 @@
       .mode-tabs {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        width: 100%;
+        position: fixed;
+        left: 8px;
+        right: 8px;
+        bottom: calc(6px + env(safe-area-inset-bottom));
+        width: auto;
+        max-width: none;
         gap: 4px;
         padding: 3px;
         border-radius: 8px;
+        overflow: hidden;
+        pointer-events: auto;
       }
 
       .mode-tab {
         min-height: 34px;
         padding: 0 4px;
-        font-size: clamp(12px, 3.5vw, 14px);
+        font-size: clamp(12px, 3.4vw, 13px);
         line-height: 1;
+      }
+
+      .tab-label-full {
+        display: none;
+      }
+
+      .tab-label-short {
+        display: inline;
       }
 
       .view-stage {
@@ -210,10 +237,10 @@
       <div class="topbar-inner">
         <h1 class="site-title">適用於戰鬥陀螺X轉速顯示裝置</h1>
         <nav class="mode-tabs" aria-label="網頁模式切換">
-          <button class="mode-tab active" type="button" data-view="tutorial" aria-controls="viewTutorial">教學模擬</button>
-          <button class="mode-tab" type="button" data-view="videos" aria-controls="viewVideos">影片教學</button>
-          <button class="mode-tab" type="button" data-view="flasher" aria-controls="viewFlasher">燒錄工具</button>
-          <button class="mode-tab" type="button" data-view="license" aria-controls="viewLicense">授權文件</button>
+          <button class="mode-tab active" type="button" data-view="tutorial" aria-controls="viewTutorial" aria-label="教學模擬"><span class="tab-label-full">教學模擬</span><span class="tab-label-short">教學</span></button>
+          <button class="mode-tab" type="button" data-view="videos" aria-controls="viewVideos" aria-label="影片教學"><span class="tab-label-full">影片教學</span><span class="tab-label-short">影片</span></button>
+          <button class="mode-tab" type="button" data-view="flasher" aria-controls="viewFlasher" aria-label="燒錄工具"><span class="tab-label-full">燒錄工具</span><span class="tab-label-short">燒錄</span></button>
+          <button class="mode-tab" type="button" data-view="license" aria-controls="viewLicense" aria-label="授權文件"><span class="tab-label-full">授權文件</span><span class="tab-label-short">授權</span></button>
         </nav>
       </div>
     </header>
@@ -224,7 +251,7 @@
       </section>
 
       <section class="view-panel" id="viewVideos" data-panel="videos" aria-label="影片教學">
-        <iframe class="embedded-page" src="videos/index.html?v=20260528_video1" title="影片教學"></iframe>
+        <iframe class="embedded-page" src="videos/index.html?v=20260528_mobile1" title="影片教學"></iframe>
       </section>
 
       <section class="view-panel" id="viewFlasher" data-panel="flasher" aria-label="燒錄工具">
