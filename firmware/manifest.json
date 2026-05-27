@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "updatedAt": "2026-05-27T15:25:00+08:00",
+  "firmwares": [
+    {
+      "id": "20260527_1525",
+      "label": "正式版 2026-05-27 15:25",
+      "file": "firmware/beyblade_speed_watch_app_20260527_1525.bin",
+      "size": 3332080,
+      "sha256": "926db5b8f2bb3a4f7e957d8331e4e7f9795ce7c142870c87bbd1d216b2ca58b9",
+      "note": "目前推薦版本",
+      "recommended": true
+    }
+  ]
+}

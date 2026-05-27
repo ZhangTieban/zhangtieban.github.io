@@ -26,6 +26,14 @@
   .btn-cool{border:none;color:#08131c;background:linear-gradient(135deg,var(--cool),#9be7ff);box-shadow:0 18px 40px rgba(73,226,255,.16)}
   .action-row .btn,#connectBtn,#disconnectBtn{width:100%}
   .btn[disabled]{opacity:.42;cursor:not-allowed;transform:none}
+  .firmware-picker{margin-bottom:14px;padding:14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+  .firmware-label{display:block;margin-bottom:8px;color:var(--text);font-size:14px;font-weight:800}
+  .firmware-select{width:100%;min-height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#07121a;color:var(--text);font:inherit;font-weight:700;padding:0 12px}
+  .firmware-select:disabled{opacity:.58}
+  .firmware-meta{display:grid;gap:7px;margin-top:10px;color:var(--muted);font-size:12px;line-height:1.45}
+  .firmware-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:start}
+  .firmware-row strong{min-width:0;color:var(--cool);font-family:'Cascadia Code','Fira Code',monospace;font-size:11px;font-weight:700;overflow-wrap:anywhere}
+  .firmware-note{margin:4px 0 0;color:#d7e8f5;font-size:13px;font-weight:650;line-height:1.55}
   .device-row{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
   .device-row:last-child{border-bottom:none}
   .device-row .label{color:var(--muted)}
@@ -86,6 +94,16 @@
               <div><h2>2. 清除與燒錄</h2></div>
               <p>授權板更新請直接開始燒錄，避免清除授權資料。</p>
             </div>
+            <div class="firmware-picker" aria-label="韌體版本選擇">
+              <label class="firmware-label" for="firmwareSelect">韌體版本</label>
+              <select class="firmware-select" id="firmwareSelect"></select>
+              <div class="firmware-meta">
+                <div class="firmware-row"><span>版本</span><strong id="firmwareVersion">-</strong></div>
+                <div class="firmware-row"><span>檔案</span><strong id="firmwareFile">-</strong></div>
+                <div class="firmware-row"><span>SHA-256</span><strong id="firmwareSha">-</strong></div>
+              </div>
+              <p class="firmware-note" id="firmwareNote">-</p>
+            </div>
             <div class="action-row">
               <button class="btn btn-danger" id="eraseBtn" type="button" disabled>清除已停用</button>
               <button class="btn btn-cool" id="flashBtn" type="button" disabled>開始燒錄</button>
@@ -128,10 +146,27 @@
       return;
     }
 
-    const FLASHER_BUILD = '2026-05-27 15:25';
-    const MODELS = {
-      amoled206: { name: '授權版韌體', file: 'firmware/beyblade_speed_watch_app_20260527_1525.bin', description: '適用韌體', flashSize: '32MB', flashMode: 'dio', flashFreq: '80m', flashAddress: 0x10000 }
+    const FLASHER_BUILD = '2026-05-27 20:03';
+    const FIRMWARE_MANIFEST_URL = 'firmware/manifest.json';
+    const DEVICE_MODEL = {
+      name: '授權版裝置',
+      description: '適用韌體',
+      flashSize: '32MB',
+      flashMode: 'dio',
+      flashFreq: '80m',
+      flashAddress: 0x10000
     };
+    const FALLBACK_FIRMWARES = [
+      {
+        id: '20260527_1525',
+        label: '正式版 2026-05-27 15:25',
+        file: 'firmware/beyblade_speed_watch_app_20260527_1525.bin',
+        size: 3332080,
+        sha256: '926db5b8f2bb3a4f7e957d8331e4e7f9795ce7c142870c87bbd1d216b2ca58b9',
+        note: '目前推薦版本',
+        recommended: true
+      }
+    ];
 
     const $ = id => document.getElementById(id);
     const connectBtn = $('connectBtn');
@@ -145,6 +180,11 @@
     const progressWrap = $('progressWrap');
     const progressFill = $('progressFill');
     const progressText = $('progressText');
+    const firmwareSelect = $('firmwareSelect');
+    const firmwareVersion = $('firmwareVersion');
+    const firmwareFile = $('firmwareFile');
+    const firmwareSha = $('firmwareSha');
+    const firmwareNote = $('firmwareNote');
     const termToggle = $('termToggle');
     const terminal = $('terminal');
     const terminalInner = $('terminalInner');
@@ -152,7 +192,9 @@
     const statusText = $('statusText');
     const unsupportedOverlay = $('unsupportedOverlay');
 
-    let selectedModel = MODELS.amoled206;
+    let selectedModel = DEVICE_MODEL;
+    let firmwareOptions = [];
+    let selectedFirmware = null;
     let esploader = null;
     let transport = null;
     let isConnected = false;
@@ -223,21 +265,105 @@
       return result;
     }
 
+    function normalizeFirmwareItem(item) {
+      if (!item || typeof item !== 'object' || !item.file) return null;
+      return {
+        id: String(item.id || item.file),
+        label: String(item.label || item.version || item.file.split('/').pop()),
+        file: String(item.file),
+        size: Number(item.size || 0),
+        sha256: String(item.sha256 || ''),
+        note: String(item.note || ''),
+        recommended: !!item.recommended
+      };
+    }
+
+    async function loadFirmwareOptions() {
+      try {
+        const response = await fetch(`${FIRMWARE_MANIFEST_URL}?v=${encodeURIComponent(FLASHER_BUILD)}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const manifest = await response.json();
+        const list = Array.isArray(manifest.firmwares) ? manifest.firmwares : manifest;
+        const normalized = list.map(normalizeFirmwareItem).filter(Boolean);
+        if (!normalized.length) throw new Error('清單是空的');
+        firmwareOptions = normalized;
+      } catch (error) {
+        firmwareOptions = FALLBACK_FIRMWARES.map(normalizeFirmwareItem).filter(Boolean);
+        log(`韌體清單載入失敗，改用內建清單：${error.message}`, '#ffa75a');
+      }
+    }
+
+    function formatFirmwareSize(bytes) {
+      return bytes ? `${(bytes / 1048576).toFixed(2)} MB` : '未知大小';
+    }
+
+    async function sha256Hex(buffer) {
+      if (!globalThis.crypto?.subtle) return '';
+      const digest = await globalThis.crypto.subtle.digest('SHA-256', buffer);
+      return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    function firmwareOptionText(firmware) {
+      const suffix = firmware.recommended ? '（推薦）' : '';
+      return `${firmware.label}${suffix}`;
+    }
+
+    function updateFirmwareDetails() {
+      if (!selectedFirmware) {
+        firmwareVersion.textContent = '-';
+        firmwareFile.textContent = '-';
+        firmwareSha.textContent = '-';
+        firmwareNote.textContent = '沒有可用韌體。';
+        return;
+      }
+      firmwareVersion.textContent = `${firmwareOptionText(selectedFirmware)} / ${formatFirmwareSize(selectedFirmware.size)}`;
+      firmwareFile.textContent = selectedFirmware.file;
+      firmwareSha.textContent = selectedFirmware.sha256 || '未提供';
+      firmwareNote.textContent = selectedFirmware.note || '請確認版本後再開始燒錄。';
+    }
+
+    function renderFirmwareOptions() {
+      firmwareSelect.innerHTML = '';
+      firmwareOptions.forEach((firmware) => {
+        const option = document.createElement('option');
+        option.value = firmware.id;
+        option.textContent = firmwareOptionText(firmware);
+        firmwareSelect.appendChild(option);
+      });
+      selectedFirmware = firmwareOptions.find((item) => item.recommended) || firmwareOptions[0] || null;
+      if (selectedFirmware) firmwareSelect.value = selectedFirmware.id;
+      firmwareSelect.disabled = isBusy || firmwareOptions.length <= 1;
+      updateFirmwareDetails();
+    }
+
+    function selectFirmware(id) {
+      selectedFirmware = firmwareOptions.find((item) => item.id === id) || firmwareOptions[0] || null;
+      updateFirmwareDetails();
+      refreshModelState();
+      if (selectedFirmware) log(`已選擇韌體：${selectedFirmware.label}`, '#8bc2ff');
+    }
+
     function extractMacFromTerminal() {
       const matches = terminalInner.textContent.match(/MAC:\s*([0-9a-f:]{17})/i);
       return matches ? matches[1].toUpperCase() : null;
     }
 
     function refreshModelState() {
-      if (!selectedModel) {
+      const ready = !!selectedModel && !!selectedFirmware && webSerialSupported;
+      firmwareSelect.disabled = isBusy || firmwareOptions.length <= 1;
+      if (!ready) {
         connectBtn.disabled = true;
         return;
       }
       if (!isConnected && !isBusy) connectBtn.disabled = false;
     }
 
+    firmwareSelect.addEventListener('change', () => {
+      selectFirmware(firmwareSelect.value);
+    });
+
     connectBtn.addEventListener('click', async () => {
-      if (!selectedModel || !webSerialSupported || isBusy) return;
+      if (!selectedModel || !selectedFirmware || !webSerialSupported || isBusy) return;
       hideStatus();
       isBusy = true;
       connectBtn.disabled = true;
@@ -293,7 +419,7 @@
       flashSize.textContent = '-';
       connectBtn.style.display = 'inline-flex';
       connectBtn.textContent = '連接裝置';
-      connectBtn.disabled = !selectedModel;
+      connectBtn.disabled = !selectedModel || !selectedFirmware;
       disconnectBtn.style.display = 'none';
       eraseBtn.disabled = true;
       flashBtn.disabled = true;
@@ -324,27 +450,38 @@
     });
 
     flashBtn.addEventListener('click', async () => {
-      if (!esploader || !selectedModel || isBusy) return;
+      if (!esploader || !selectedModel || !selectedFirmware || isBusy) return;
+      const firmwareToFlash = selectedFirmware;
       isBusy = true;
       flashBtn.disabled = true;
       eraseBtn.disabled = true;
       disconnectBtn.disabled = true;
+      firmwareSelect.disabled = true;
       hideStatus();
       progressWrap.classList.add('show');
       progressFill.style.width = '0%';
       progressText.innerHTML = '正在讀取韌體檔案...';
-      log('開始讀取韌體檔案...', '#56d5ff');
+      log(`開始讀取韌體檔案：${firmwareToFlash.label}`, '#56d5ff');
+      log(`韌體路徑：${firmwareToFlash.file}`, '#8bc2ff');
       try {
-        const response = await fetch(selectedModel.file);
+        const response = await fetch(firmwareToFlash.file);
         if (!response.ok) {
           throw new Error(`無法讀取韌體檔案 (HTTP ${response.status})，請確認 firmware 資料夾中已有對應檔案`);
         }
         const firmwareBuffer = await response.arrayBuffer();
+        if (firmwareToFlash.sha256) {
+          const actualSha = await sha256Hex(firmwareBuffer);
+          if (actualSha && actualSha !== firmwareToFlash.sha256.toLowerCase()) {
+            throw new Error('韌體 SHA-256 不一致，已停止燒錄');
+          }
+          if (actualSha) log('韌體 SHA-256 驗證通過', '#79f7aa');
+        }
         const firmwareBytes = normalizeFirmwareData(firmwareBuffer);
         const firmwareData = toBinaryString(firmwareBytes);
         const sizeMB = (firmwareBytes.length / 1048576).toFixed(2);
         progressText.innerHTML = `韌體大小：<span>${sizeMB} MB</span>`;
         log(`韌體讀取完成，大小 ${sizeMB} MB`, '#79f7aa');
+        if (firmwareToFlash.sha256) log(`韌體 SHA-256：${firmwareToFlash.sha256}`, '#8bc2ff');
         log(`韌體資料格式：BinaryString`, '#8bc2ff');
         const flashOptions = {
           fileArray: [{ data: firmwareData, address: selectedModel.flashAddress }],
@@ -375,6 +512,7 @@
         flashBtn.disabled = false;
         eraseBtn.disabled = true;
         disconnectBtn.disabled = false;
+        refreshModelState();
       }
     });
 
@@ -383,8 +521,11 @@
       termToggle.classList.toggle('open');
     });
 
+    await loadFirmwareOptions();
+    renderFirmwareOptions();
     refreshModelState();
-    log(`頁面已就緒，已套用：${selectedModel.name}`, '#8bc2ff');
+    log(`頁面已就緒，裝置：${selectedModel.name}`, '#8bc2ff');
+    if (selectedFirmware) log(`預設韌體：${selectedFirmware.label}`, '#8bc2ff');
     log(`Flasher build: ${FLASHER_BUILD}`, '#8bc2ff');
   })();
   </script>
