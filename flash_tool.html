@@ -100,7 +100,6 @@
               <div class="firmware-meta">
                 <div class="firmware-row"><span>版本</span><strong id="firmwareVersion">-</strong></div>
                 <div class="firmware-row"><span>檔案</span><strong id="firmwareFile">-</strong></div>
-                <div class="firmware-row"><span>SHA-256</span><strong id="firmwareSha">-</strong></div>
               </div>
               <p class="firmware-note" id="firmwareNote">-</p>
             </div>
@@ -146,7 +145,7 @@
       return;
     }
 
-    const FLASHER_BUILD = '2026-05-27 20:03';
+    const FLASHER_BUILD = '2026-05-27 20:18';
     const FIRMWARE_MANIFEST_URL = 'firmware/manifest.json';
     const DEVICE_MODEL = {
       name: '授權版裝置',
@@ -183,7 +182,6 @@
     const firmwareSelect = $('firmwareSelect');
     const firmwareVersion = $('firmwareVersion');
     const firmwareFile = $('firmwareFile');
-    const firmwareSha = $('firmwareSha');
     const firmwareNote = $('firmwareNote');
     const termToggle = $('termToggle');
     const terminal = $('terminal');
@@ -312,13 +310,11 @@
       if (!selectedFirmware) {
         firmwareVersion.textContent = '-';
         firmwareFile.textContent = '-';
-        firmwareSha.textContent = '-';
         firmwareNote.textContent = '沒有可用韌體。';
         return;
       }
       firmwareVersion.textContent = `${firmwareOptionText(selectedFirmware)} / ${formatFirmwareSize(selectedFirmware.size)}`;
       firmwareFile.textContent = selectedFirmware.file;
-      firmwareSha.textContent = selectedFirmware.sha256 || '未提供';
       firmwareNote.textContent = selectedFirmware.note || '請確認版本後再開始燒錄。';
     }
 
@@ -472,16 +468,15 @@
         if (firmwareToFlash.sha256) {
           const actualSha = await sha256Hex(firmwareBuffer);
           if (actualSha && actualSha !== firmwareToFlash.sha256.toLowerCase()) {
-            throw new Error('韌體 SHA-256 不一致，已停止燒錄');
+            throw new Error('韌體檔案驗證失敗，已停止燒錄');
           }
-          if (actualSha) log('韌體 SHA-256 驗證通過', '#79f7aa');
+          if (actualSha) log('韌體檔案驗證通過', '#79f7aa');
         }
         const firmwareBytes = normalizeFirmwareData(firmwareBuffer);
         const firmwareData = toBinaryString(firmwareBytes);
         const sizeMB = (firmwareBytes.length / 1048576).toFixed(2);
         progressText.innerHTML = `韌體大小：<span>${sizeMB} MB</span>`;
         log(`韌體讀取完成，大小 ${sizeMB} MB`, '#79f7aa');
-        if (firmwareToFlash.sha256) log(`韌體 SHA-256：${firmwareToFlash.sha256}`, '#8bc2ff');
         log(`韌體資料格式：BinaryString`, '#8bc2ff');
         const flashOptions = {
           fileArray: [{ data: firmwareData, address: selectedModel.flashAddress }],
