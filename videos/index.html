@@ -92,8 +92,9 @@
       font-weight: 750;
     }
 
-    .video-card,
-    .details {
+    .video-card {
+      width: min(640px, 100%);
+      margin: 0 auto;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: rgba(16, 25, 35, 0.86);
@@ -110,79 +111,26 @@
       display: block;
       width: 100%;
       height: 100%;
-      max-height: min(68vh, 680px);
       background: #000;
       object-fit: contain;
     }
 
-    .video-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      background: rgba(255, 255, 255, 0.035);
-      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    @media (min-height: 560px) and (min-width: 761px) {
+      .video-card {
+        width: min(760px, 100%);
+      }
     }
 
-    .video-meta strong {
-      font-size: 17px;
-      line-height: 1.35;
+    @media (min-height: 700px) and (min-width: 761px) {
+      .video-card {
+        width: min(900px, 100%);
+      }
     }
 
-    .video-meta span {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.4;
-      text-align: right;
-    }
-
-    .details {
-      padding: 16px;
-      display: grid;
-      gap: 12px;
-    }
-
-    .details h2 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.35;
-      letter-spacing: 0;
-    }
-
-    .step-list {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .step-list li {
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 8px;
-      background: var(--panel-2);
-      color: #d9ebf7;
-      line-height: 1.45;
-      font-weight: 650;
-    }
-
-    .step-list b {
-      flex: 0 0 auto;
-      width: 24px;
-      height: 24px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      color: #061018;
-      background: var(--warm);
-      font-size: 13px;
+    @media (min-height: 840px) and (min-width: 761px) {
+      .video-card {
+        width: min(960px, 100%);
+      }
     }
 
     @media (max-width: 760px) {
@@ -207,51 +155,16 @@
         font-size: 13px;
       }
 
+      .video-card {
+        width: 100%;
+      }
+
       .video-wrap {
         aspect-ratio: 16 / 9;
       }
 
       video {
         max-height: 46vh;
-      }
-
-      .video-meta {
-        align-items: start;
-        flex-direction: column;
-        gap: 4px;
-        padding: 10px 12px;
-      }
-
-      .video-meta strong {
-        font-size: 15px;
-      }
-
-      .video-meta span {
-        font-size: 12px;
-      }
-
-      .video-meta span {
-        text-align: left;
-      }
-
-      .details {
-        padding: 10px 12px 12px;
-        gap: 8px;
-      }
-
-      .details h2 {
-        font-size: 16px;
-      }
-
-      .step-list {
-        grid-template-columns: 1fr;
-        gap: 6px;
-      }
-
-      .step-list li {
-        min-height: 38px;
-        padding: 8px 10px;
-        font-size: 14px;
       }
     }
   </style>
@@ -275,17 +188,6 @@
       </div>
     </section>
 
-    <section class="details" aria-label="影片章節">
-      <h2>章節</h2>
-      <ol class="step-list">
-        <li><b>1</b><span>確認內容物</span></li>
-        <li><b>2</b><span>拆下背面螺絲</span></li>
-        <li><b>3</b><span>接上電池</span></li>
-        <li><b>4</b><span>開機檢查</span></li>
-        <li><b>5</b><span>合蓋並鎖回螺絲</span></li>
-        <li><b>6</b><span>安裝兩段錶帶</span></li>
-      </ol>
-    </section>
   </main>
 </body>
 </html>
