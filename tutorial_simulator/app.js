@@ -880,17 +880,17 @@ function updateViewportScale() {
   const viewport = window.visualViewport || window;
   const vw = viewport.width || window.innerWidth || WATCH_STAGE_W;
   const vh = viewport.height || window.innerHeight || SCREEN_H;
-  const compact = window.matchMedia("(max-width: 820px), (max-height: 620px)").matches;
+  const mobileLayout = window.matchMedia("(max-width: 760px)").matches;
 
-  if (!compact) {
-    const desktopMaxScale = vw >= 1040 && vh >= 620 ? 1.12 : 1;
-    const widthAllowance = Math.max(0.88, (vw - 414) / WATCH_STAGE_W);
-    const heightAllowance = Math.max(0.88, (vh - 80) / SCREEN_H);
+  if (!mobileLayout) {
+    const desktopMaxScale = vw >= 1240 && vh >= 700 ? 1.18 : (vw >= 1040 && vh >= 600 ? 1.12 : 1);
+    const widthAllowance = Math.max(0.92, (vw - 430) / WATCH_STAGE_W);
+    const heightAllowance = Math.max(0.92, (vh - 100) / SCREEN_H);
     let scale = Math.min(desktopMaxScale, widthAllowance, heightAllowance);
-    scale = Math.max(0.88, Math.min(desktopMaxScale, scale));
+    scale = Math.max(0.92, Math.min(desktopMaxScale, scale));
     const stageWidth = Math.ceil(WATCH_STAGE_W * scale);
     const screenWidth = Math.ceil(SCREEN_W * scale);
-    const panelWidth = Math.min(520, Math.max(360, Math.floor(vw - stageWidth - 54)));
+    const panelWidth = Math.min(560, Math.max(340, Math.floor(vw - stageWidth - 54)));
     const screenCenterShift = Math.max(0, Math.round((stageWidth - screenWidth) / 2));
     document.documentElement.style.setProperty("--watch-scale", scale.toFixed(4));
     document.documentElement.style.setProperty("--watch-stage-layout-w", stageWidth + "px");
