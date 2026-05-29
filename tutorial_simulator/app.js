@@ -78,7 +78,7 @@ const settingsPageDefs = {
   brightness: { title: "畫面亮度", parent: "settings" },
   offtime: { title: "自動休眠", parent: "settings" },
   volume: { title: "音量", parent: "settings" },
-  level: { title: "水平儀", parent: "settings" },
+  level: { title: "陀螺平衡測試", parent: "settings" },
   sdDetail: { title: "SD卡資訊", parent: "settings" },
   about: { title: "關於設備", parent: "settings" },
   aboutDevice: { title: "設備資訊", parent: "about" },
@@ -817,13 +817,13 @@ const tutorialSteps = [
   {
     id: "settingsLevelIntro",
     chapter: "settings",
-    title: "水平儀",
+    title: "陀螺平衡測試",
     target: "#settingsScreen [data-settings-page='level']",
     pad: 6,
     lockControls: true,
     lines: [
-      "水平儀依目前程式包設定停用。",
-      "此列會以灰階顯示，且不能進入水平儀頁面。"
+      "陀螺平衡測試依目前程式包設定停用。",
+      "此列會以灰階顯示，且不能進入陀螺平衡測試頁面。"
     ]
   },
   {

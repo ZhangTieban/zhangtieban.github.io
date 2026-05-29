@@ -74,7 +74,6 @@
           <section class="card section-card">
             <div class="section-heading">
               <div><h2>1. 連接裝置</h2></div>
-              <p>使用 USB 資料線連接裝置後，即可建立串口連線 (USB/JTAG)。</p>
             </div>
             <div class="guide-panel">
               <strong>連接教學</strong>
@@ -448,8 +447,16 @@
         progressFill.style.width = '100%';
         progressText.innerHTML = '燒錄完成 <span>100%</span>';
         log('韌體燒錄成功', '#79f7aa');
-        showStatus('success', '韌體燒錄成功，請手動重新上電。');
-        log('燒錄完成，請手動重新上電', '#ffa75a');
+        showStatus('success', '韌體燒錄成功，正在重新啟動裝置...');
+        log('燒錄完成，正在嘗試自動重新啟動裝置', '#ffd267');
+        try {
+          await esploader.after('hard_reset');
+          showStatus('success', '韌體燒錄成功，已嘗試重新啟動裝置。');
+          log('已送出自動重新啟動指令', '#79f7aa');
+        } catch (resetError) {
+          showStatus('success', '韌體燒錄成功，但自動重新啟動失敗，請手動重新上電。');
+          log(`自動重新啟動失敗：${resetError.message}`, '#ffa75a');
+        }
       } catch (error) {
         log(`燒錄失敗：${error.message}`, '#ff8095');
         progressText.innerHTML = '<span style="color:var(--bad)">燒錄失敗</span>';

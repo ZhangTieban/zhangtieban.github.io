@@ -1013,6 +1013,10 @@ button.screen-side-button {
   background-image: url("assets/watch_outline_32x32_lvgl_8fa8ff.png?v=20260518_230820");
 }
 
+.settings-img-beyblade-level::before {
+  background-image: url("assets/beyblade_level_32x32_lvgl_4fc3f7.png?v=20260529_154000");
+}
+
 .settings-icon-datetime { color: #f4a259; }
 .settings-icon-bright { color: #ffd166; }
 .settings-icon-powersave { color: #5ec0a5; }
