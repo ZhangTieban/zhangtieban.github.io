@@ -22,18 +22,17 @@
   }
   .action-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
   .btn-plain{border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text)}
-  .btn-danger{border:none;color:#fff;background:linear-gradient(135deg,#ff6a7f,#ff9b63);box-shadow:0 18px 40px rgba(255,106,127,.16)}
   .btn-cool{border:none;color:#08131c;background:linear-gradient(135deg,var(--cool),#9be7ff);box-shadow:0 18px 40px rgba(73,226,255,.16)}
   .action-row .btn,#connectBtn,#disconnectBtn{width:100%}
   .btn[disabled]{opacity:.42;cursor:not-allowed;transform:none}
+  .guide-panel{margin:12px 0 14px;padding:14px;border-radius:14px;background:rgba(73,226,255,.08);border:1px solid rgba(73,226,255,.18);color:var(--muted);font-size:13px;line-height:1.65}
+  .guide-panel strong{display:block;margin-bottom:6px;color:var(--text);font-size:14px}
+  .guide-panel ol{margin:0;padding-left:1.25em}
+  .guide-panel li{margin:3px 0}
   .firmware-picker{margin-bottom:14px;padding:14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
   .firmware-label{display:block;margin-bottom:8px;color:var(--text);font-size:14px;font-weight:800}
   .firmware-select{width:100%;min-height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#07121a;color:var(--text);font:inherit;font-weight:700;padding:0 12px}
   .firmware-select:disabled{opacity:.58}
-  .firmware-meta{display:grid;gap:7px;margin-top:10px;color:var(--muted);font-size:12px;line-height:1.45}
-  .firmware-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:start}
-  .firmware-row strong{min-width:0;color:var(--cool);font-family:'Cascadia Code','Fira Code',monospace;font-size:11px;font-weight:700;overflow-wrap:anywhere}
-  .firmware-note{margin:4px 0 0;color:#d7e8f5;font-size:13px;font-weight:650;line-height:1.55}
   .device-row{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
   .device-row:last-child{border-bottom:none}
   .device-row .label{color:var(--muted)}
@@ -77,6 +76,15 @@
               <div><h2>1. 連接裝置</h2></div>
               <p>使用 USB 資料線連接裝置後，即可建立串口連線 (USB/JTAG)。</p>
             </div>
+            <div class="guide-panel">
+              <strong>連接教學</strong>
+              <ol>
+                <li>使用電腦版 Google Chrome 或 Microsoft Edge 開啟本頁。</li>
+                <li>用具有傳輸功能的 Type-C USB 資料線連接裝置與電腦。</li>
+                <li>點選「連接裝置」，在瀏覽器視窗中選擇 USB/JTAG 或 ESP32-S3 裝置。</li>
+                <li>連線成功後，再點選「開始燒錄」。</li>
+              </ol>
+            </div>
             <div class="action-row" style="grid-template-columns:1fr">
               <button class="btn btn-cool" id="connectBtn" type="button" disabled>連接裝置</button>
               <button class="btn btn-plain" id="disconnectBtn" type="button" style="display:none">中斷連接</button>
@@ -90,20 +98,13 @@
 
           <section class="card section-card">
             <div class="section-heading">
-              <div><h2>2. 清除與燒錄</h2></div>
-              <p>授權板更新請直接開始燒錄，避免清除授權資料。</p>
+              <div><h2>2. 燒錄韌體</h2></div>
             </div>
             <div class="firmware-picker" aria-label="韌體版本選擇">
               <label class="firmware-label" for="firmwareSelect">韌體版本</label>
               <select class="firmware-select" id="firmwareSelect"></select>
-              <div class="firmware-meta">
-                <div class="firmware-row"><span>版本</span><strong id="firmwareVersion">-</strong></div>
-                <div class="firmware-row"><span>檔案</span><strong id="firmwareFile">-</strong></div>
-              </div>
-              <p class="firmware-note" id="firmwareNote">-</p>
             </div>
-            <div class="action-row">
-              <button class="btn btn-danger" id="eraseBtn" type="button" disabled>清除已停用</button>
+            <div class="action-row" style="grid-template-columns:1fr">
               <button class="btn btn-cool" id="flashBtn" type="button" disabled>開始燒錄</button>
             </div>
             <div class="progress-wrap" id="progressWrap">
@@ -161,7 +162,6 @@
         file: 'firmware/beyblade_speed_watch_app_20260527_1525.bin',
         size: 3332080,
         sha256: '926db5b8f2bb3a4f7e957d8331e4e7f9795ce7c142870c87bbd1d216b2ca58b9',
-        note: '目前推薦版本',
         recommended: true
       }
     ];
@@ -169,7 +169,6 @@
     const $ = id => document.getElementById(id);
     const connectBtn = $('connectBtn');
     const disconnectBtn = $('disconnectBtn');
-    const eraseBtn = $('eraseBtn');
     const flashBtn = $('flashBtn');
     const deviceInfo = $('deviceInfo');
     const chipName = $('chipName');
@@ -179,9 +178,6 @@
     const progressFill = $('progressFill');
     const progressText = $('progressText');
     const firmwareSelect = $('firmwareSelect');
-    const firmwareVersion = $('firmwareVersion');
-    const firmwareFile = $('firmwareFile');
-    const firmwareNote = $('firmwareNote');
     const termToggle = $('termToggle');
     const terminal = $('terminal');
     const terminalInner = $('terminalInner');
@@ -290,10 +286,6 @@
       }
     }
 
-    function formatFirmwareSize(bytes) {
-      return bytes ? `${(bytes / 1048576).toFixed(2)} MB` : '未知大小';
-    }
-
     async function sha256Hex(buffer) {
       if (!globalThis.crypto?.subtle) return '';
       const digest = await globalThis.crypto.subtle.digest('SHA-256', buffer);
@@ -303,18 +295,6 @@
     function firmwareOptionText(firmware) {
       const suffix = firmware.recommended ? '（推薦）' : '';
       return `${firmware.label}${suffix}`;
-    }
-
-    function updateFirmwareDetails() {
-      if (!selectedFirmware) {
-        firmwareVersion.textContent = '-';
-        firmwareFile.textContent = '-';
-        firmwareNote.textContent = '沒有可用韌體。';
-        return;
-      }
-      firmwareVersion.textContent = `${firmwareOptionText(selectedFirmware)} / ${formatFirmwareSize(selectedFirmware.size)}`;
-      firmwareFile.textContent = selectedFirmware.file;
-      firmwareNote.textContent = selectedFirmware.note || '請確認版本後再開始燒錄。';
     }
 
     function renderFirmwareOptions() {
@@ -328,12 +308,10 @@
       selectedFirmware = firmwareOptions.find((item) => item.recommended) || firmwareOptions[0] || null;
       if (selectedFirmware) firmwareSelect.value = selectedFirmware.id;
       firmwareSelect.disabled = isBusy || firmwareOptions.length <= 1;
-      updateFirmwareDetails();
     }
 
     function selectFirmware(id) {
       selectedFirmware = firmwareOptions.find((item) => item.id === id) || firmwareOptions[0] || null;
-      updateFirmwareDetails();
       refreshModelState();
       if (selectedFirmware) log(`已選擇韌體：${selectedFirmware.label}`, '#8bc2ff');
     }
@@ -383,7 +361,6 @@
         deviceInfo.classList.add('show');
         connectBtn.style.display = 'none';
         disconnectBtn.style.display = 'inline-flex';
-        eraseBtn.disabled = true;
         flashBtn.disabled = false;
         isConnected = true;
         log(`裝置連接成功：${chip}`, '#79f7aa');
@@ -416,32 +393,9 @@
       connectBtn.textContent = '連接裝置';
       connectBtn.disabled = !selectedModel || !selectedFirmware;
       disconnectBtn.style.display = 'none';
-      eraseBtn.disabled = true;
       flashBtn.disabled = true;
       hideStatus();
       log('已中斷裝置連接', '#ffa75a');
-    });
-
-    eraseBtn.addEventListener('click', async () => {
-      if (!esploader || isBusy) return;
-      if (!confirm('確定要清除整個 Flash 嗎？此操作無法復原。')) return;
-      isBusy = true;
-      eraseBtn.disabled = true;
-      flashBtn.disabled = true;
-      log('開始清除 Flash...', '#ffd267');
-      showStatus('success', '正在清除 Flash，請稍候...');
-      try {
-        await esploader.eraseFlash();
-        log('Flash 清除完成', '#79f7aa');
-        showStatus('success', 'Flash 清除完成');
-      } catch (error) {
-        log(`清除失敗：${error.message}`, '#ff8095');
-        showStatus('error', `清除失敗：${error.message}`);
-      } finally {
-        isBusy = false;
-        eraseBtn.disabled = true;
-        flashBtn.disabled = false;
-      }
     });
 
     flashBtn.addEventListener('click', async () => {
@@ -449,7 +403,6 @@
       const firmwareToFlash = selectedFirmware;
       isBusy = true;
       flashBtn.disabled = true;
-      eraseBtn.disabled = true;
       disconnectBtn.disabled = true;
       firmwareSelect.disabled = true;
       hideStatus();
@@ -504,7 +457,6 @@
       } finally {
         isBusy = false;
         flashBtn.disabled = false;
-        eraseBtn.disabled = true;
         disconnectBtn.disabled = false;
         refreshModelState();
       }
