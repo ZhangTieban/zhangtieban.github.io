@@ -884,13 +884,31 @@ function updateViewportScale() {
 
   if (!mobileLayout) {
     const desktopMaxScale = vw >= 1240 && vh >= 700 ? 1.18 : (vw >= 1040 && vh >= 600 ? 1.12 : 1);
-    const widthAllowance = Math.max(0.92, (vw - 430) / WATCH_STAGE_W);
-    const heightAllowance = Math.max(0.92, (vh - 100) / SCREEN_H);
+    const desktopMinScale = vh < 620 || vw < 900 ? 0.78 : 0.86;
+    const layout = document.querySelector(".layout");
+    const bodyStyle = window.getComputedStyle(document.body);
+    const layoutStyle = layout ? window.getComputedStyle(layout) : null;
+    const stageStyle = window.getComputedStyle(shell.parentElement || shell);
+    const title = document.querySelector(".sim-title");
+    const bodyReserve =
+      (parseFloat(bodyStyle.paddingTop) || 0) +
+      (parseFloat(bodyStyle.paddingBottom) || 0);
+    const bodyHorizontalReserve =
+      (parseFloat(bodyStyle.paddingLeft) || 0) +
+      (parseFloat(bodyStyle.paddingRight) || 0);
+    const layoutGap = layoutStyle ? (parseFloat(layoutStyle.columnGap || layoutStyle.gap) || 30) : 30;
+    const titleReserve = title ? title.getBoundingClientRect().height : 24;
+    const stageGap = parseFloat(stageStyle.rowGap || stageStyle.gap) || 22;
+    const frameShadowReserve = 56;
+    const verticalReserve = bodyReserve + titleReserve + stageGap + frameShadowReserve;
+    const panelMinWidth = 340;
+    const widthAllowance = Math.max(desktopMinScale, (vw - bodyHorizontalReserve - layoutGap - panelMinWidth) / WATCH_STAGE_W);
+    const heightAllowance = Math.max(desktopMinScale, (vh - verticalReserve) / SCREEN_H);
     let scale = Math.min(desktopMaxScale, widthAllowance, heightAllowance);
-    scale = Math.max(0.92, Math.min(desktopMaxScale, scale));
+    scale = Math.max(desktopMinScale, Math.min(desktopMaxScale, scale));
     const stageWidth = Math.ceil(WATCH_STAGE_W * scale);
     const screenWidth = Math.ceil(SCREEN_W * scale);
-    const panelWidth = Math.min(560, Math.max(340, Math.floor(vw - stageWidth - 54)));
+    const panelWidth = Math.min(560, Math.max(panelMinWidth, Math.floor(vw - bodyHorizontalReserve - layoutGap - stageWidth)));
     const screenCenterShift = Math.max(0, Math.round((stageWidth - screenWidth) / 2));
     document.documentElement.style.setProperty("--watch-scale", scale.toFixed(4));
     document.documentElement.style.setProperty("--watch-stage-layout-w", stageWidth + "px");

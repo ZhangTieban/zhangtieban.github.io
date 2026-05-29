@@ -238,7 +238,7 @@
         <h1 class="site-title">適用於戰鬥陀螺X轉速顯示裝置</h1>
         <nav class="mode-tabs" aria-label="網頁模式切換">
           <button class="mode-tab active" type="button" data-view="tutorial" aria-controls="viewTutorial" aria-label="教學模擬"><span class="tab-label-full">教學模擬</span><span class="tab-label-short">教學</span></button>
-          <button class="mode-tab" type="button" data-view="videos" aria-controls="viewVideos" aria-label="影片教學"><span class="tab-label-full">影片教學</span><span class="tab-label-short">影片</span></button>
+          <button class="mode-tab" type="button" data-view="videos" aria-controls="viewVideos" aria-label="電池安裝教學"><span class="tab-label-full">電池安裝教學</span><span class="tab-label-short">電池</span></button>
           <button class="mode-tab" type="button" data-view="flasher" aria-controls="viewFlasher" aria-label="燒錄工具"><span class="tab-label-full">燒錄工具</span><span class="tab-label-short">燒錄</span></button>
           <button class="mode-tab" type="button" data-view="license" aria-controls="viewLicense" aria-label="授權文件"><span class="tab-label-full">授權文件</span><span class="tab-label-short">授權</span></button>
         </nav>
@@ -247,11 +247,11 @@
 
     <main class="view-stage">
       <section class="view-panel active" id="viewTutorial" data-panel="tutorial" aria-label="教學模擬">
-        <iframe class="embedded-page" src="tutorial_simulator/index.html?v=20260528_splitlayout_local1" title="教學模擬"></iframe>
+        <iframe class="embedded-page" src="tutorial_simulator/index.html?v=20260529_titlecenter1" title="教學模擬"></iframe>
       </section>
 
-      <section class="view-panel" id="viewVideos" data-panel="videos" aria-label="影片教學">
-        <iframe class="embedded-page" src="videos/index.html?v=20260528_desktopfit1" title="影片教學"></iframe>
+      <section class="view-panel" id="viewVideos" data-panel="videos" aria-label="電池安裝教學">
+        <iframe class="embedded-page" src="videos/index.html?v=20260529_batterylesson1" title="電池安裝教學"></iframe>
       </section>
 
       <section class="view-panel" id="viewFlasher" data-panel="flasher" aria-label="燒錄工具">
@@ -269,7 +269,7 @@
     const panels = Array.from(document.querySelectorAll('.view-panel'));
     const modeLabels = {
       tutorial: '教學模擬',
-      videos: '影片教學',
+      videos: '電池安裝教學',
       flasher: '燒錄工具',
       license: '授權文件'
     };
