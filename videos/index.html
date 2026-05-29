@@ -148,6 +148,47 @@
         max-height: 46vh;
       }
     }
+
+    .note-card {
+      width: min(640px, 100%);
+      margin: 0 auto;
+      border: 1px solid rgba(87, 223, 255, 0.28);
+      border-radius: 8px;
+      background: rgba(16, 25, 35, 0.74);
+      padding: 13px 15px;
+      color: var(--text);
+      display: grid;
+      gap: 6px;
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .note-title {
+      color: var(--accent);
+      font-weight: 850;
+    }
+
+    .note-card p {
+      margin: 0;
+    }
+
+    @media (min-height: 560px) and (min-width: 761px) {
+      .note-card {
+        width: min(760px, 100%);
+      }
+    }
+
+    @media (min-height: 700px) and (min-width: 761px) {
+      .note-card {
+        width: min(900px, 100%);
+      }
+    }
+
+    @media (min-height: 840px) and (min-width: 761px) {
+      .note-card {
+        width: min(960px, 100%);
+      }
+    }
   </style>
 </head>
 <body>
@@ -161,13 +202,39 @@
 
     <section class="video-card" aria-label="電池與錶帶安裝影片">
       <div class="video-wrap">
-        <video controls playsinline preload="metadata" poster="battery-install-poster.png">
-          <source src="battery-install-esp32-s3-touch-amoled-206.mp4?v=20260529_batteryonly1" type="video/mp4">
+        <video id="installVideo" controls playsinline preload="metadata" poster="battery-install-poster.png">
+          <source src="battery-install-esp32-s3-touch-amoled-206.mp4?v=20260529_battery_autooff1" type="video/mp4">
           你的瀏覽器不支援影片播放。
         </video>
       </div>
     </section>
 
+    <section class="note-card" aria-label="電池安裝後開機說明">
+      <div class="note-title">電池接上後的正常狀態</div>
+      <p>新版韌體在接上電池後若短暫自動開機，會自行進入關機狀態，不需要再手動關機。</p>
+      <p>完成安裝後，長按右下側邊鍵約 2 秒即可正常開機；日常需要關機時，再長按右下側邊鍵約 6 秒。</p>
+    </section>
+
   </main>
+  <script>
+    (() => {
+      const video = document.getElementById("installVideo");
+      if (!video) return;
+      const hiddenRanges = [
+        { start: 64.0, end: 74.2 }
+      ];
+      const jumpIfHidden = () => {
+        for (const range of hiddenRanges) {
+          if (video.currentTime >= range.start && video.currentTime < range.end) {
+            video.currentTime = range.end;
+            return;
+          }
+        }
+      };
+      video.addEventListener("timeupdate", jumpIfHidden);
+      video.addEventListener("seeking", jumpIfHidden);
+      video.addEventListener("seeked", jumpIfHidden);
+    })();
+  </script>
 </body>
 </html>
