@@ -116,6 +116,12 @@ const tutorialProfileExamples = {
 };
 const tutorialProfileDefault = tutorialProfileExamples.normal;
 const tutorialProfilePeak = Math.max(...tutorialProfileDefault.points);
+const tutorialLiveDiagExamples = {
+  normal: { rpm: 12400, text: "正常發射" },
+  low: { rpm: 1660, text: "低速發射" },
+  high: { rpm: 20700, text: "高速發射" },
+  abnormal: { rpm: 11700, text: "異常發射" }
+};
 
 const settingsPageDefs = {
   datetime: { title: "日期與時間", parent: "settings" },
@@ -169,6 +175,7 @@ const state = {
   histShowAna: true,
   profileDetail: false,
   profileExample: "",
+  liveDiagExample: "",
   timeCardTimerMode: false,
   timeFormat12h: false,
   brightnessPct: 72,
@@ -624,6 +631,54 @@ const tutorialSteps = [
     lines: [
       "上方狀態標籤顯示連線、裝上陀螺與計算狀態。",
       "下方判定列只顯示發射結果，尚無結果時顯示 --。"
+    ]
+  },
+  {
+    id: "liveDiagNormalIntro",
+    chapter: "mode",
+    title: "Live 正常發射",
+    target: "#diagLabel",
+    pad: 8,
+    lockControls: true,
+    lines: [
+      "Live 會顯示「判定: 正常發射」。",
+      "發射分析圖會標峰值，並顯示「峰值夠高 + 明顯下降」。"
+    ]
+  },
+  {
+    id: "liveDiagLowIntro",
+    chapter: "mode",
+    title: "Live 低速發射",
+    target: "#diagLabel",
+    pad: 8,
+    lockControls: true,
+    lines: [
+      "Live 會顯示「判定: 低速發射」。",
+      "發射分析圖會加 2000 門檻線，表示峰值低於低速門檻。"
+    ]
+  },
+  {
+    id: "liveDiagHighIntro",
+    chapter: "mode",
+    title: "Live 高速發射",
+    target: "#diagLabel",
+    pad: 8,
+    lockControls: true,
+    lines: [
+      "Live 會顯示「判定: 高速發射」。",
+      "發射分析圖會加 19000 門檻線，表示連續超過高速門檻。"
+    ]
+  },
+  {
+    id: "liveDiagAbnormalIntro",
+    chapter: "mode",
+    title: "Live 異常發射",
+    target: "#diagLabel",
+    pad: 8,
+    lockControls: true,
+    lines: [
+      "Live 會顯示「判定: 異常發射」。",
+      "發射分析圖會顯示急掉速曲線，幫助判斷資料是否不完整。"
     ]
   },
   {
@@ -2575,7 +2630,10 @@ function renderChips() {
 }
 
 function liveDiagText() {
-  const result = state.lastDone ? launchDiagResultText(state.shotPeak || state.liveMax || state.liveRpm) : "--";
+  const liveExample = tutorialLiveDiagExamples[state.liveDiagExample] || null;
+  const result = state.lastDone
+    ? (liveExample?.text || launchDiagResultText(state.shotPeak || state.liveMax || state.liveRpm))
+    : "--";
   return `判定: ${result}`;
 }
 
@@ -4082,6 +4140,33 @@ function tutorialLiveStatMode(stepId) {
   }
 }
 
+function applyTutorialLiveDiagExample(stepId) {
+  const keyByStep = {
+    liveDiagNormalIntro: "normal",
+    liveDiagLowIntro: "low",
+    liveDiagHighIntro: "high",
+    liveDiagAbnormalIntro: "abnormal"
+  };
+  const key = keyByStep[stepId] || "";
+  const example = tutorialLiveDiagExamples[key];
+  if (!example) return false;
+  ensureDemoConnected();
+  state.liveDiagExample = key;
+  state.blePhase = "subscribed_live";
+  state.mode = "connected";
+  state.disconnecting = false;
+  state.isAttached = false;
+  state.isCalculating = false;
+  state.lastDone = true;
+  state.liveRpm = example.rpm;
+  state.shotPeak = example.rpm;
+  state.liveMax = example.rpm;
+  state.liveAvg = Math.round(example.rpm * 0.72);
+  state.liveMin = Math.round(example.rpm * 0.38);
+  state.liveShots = Math.max(state.liveShots || 0, 18);
+  return true;
+}
+
 function setTutorialScreen(screenName) {
   if (state.screen !== screenName) showScreen(screenName);
 }
@@ -4101,6 +4186,9 @@ function syncTutorialStepSurface(step = currentTutorialStep()) {
   if (!state.tutorialActive || state.tutorialDone || !step) return;
   if (!["profilePurposeIntro", "profileChartIntro", "profileLowSpeedIntro", "profileHighSpeedIntro", "profileAbnormalIntro", "pageDotsIntro"].includes(step.id)) {
     state.profileExample = "";
+  }
+  if (!["liveDiagNormalIntro", "liveDiagLowIntro", "liveDiagHighIntro", "liveDiagAbnormalIntro"].includes(step.id)) {
+    state.liveDiagExample = "";
   }
 
   const offSurfaceSteps = ["powerButtonIntro", "timerButtonIntro", "chargePortIntro", "sdSlotIntro", "chargePortUse"];
@@ -4154,6 +4242,10 @@ function syncTutorialStepSurface(step = currentTutorialStep()) {
     "timerPause",
     "liveRpmIntro",
     "liveStatusIntro",
+    "liveDiagNormalIntro",
+    "liveDiagLowIntro",
+    "liveDiagHighIntro",
+    "liveDiagAbnormalIntro",
     "liveModeTabsIntro",
     "liveStatsSwitchIntro",
     "liveMaxIntro",
@@ -4163,6 +4255,7 @@ function syncTutorialStepSurface(step = currentTutorialStep()) {
   ];
   if (liveStepIds.includes(step.id)) {
     setTutorialBbpPage("live");
+    applyTutorialLiveDiagExample(step.id);
     const mode = tutorialLiveStatMode(step.id);
     if (mode !== null && state.statMode !== mode) {
       state.statMode = mode;
@@ -4271,6 +4364,7 @@ function completeTutorial() {
   state.tutorialOpen = false;
   state.tutorialReviewMode = false;
   state.profileExample = "";
+  state.liveDiagExample = "";
   resetTutorialStepEntry();
   persistTutorialDone(true);
   setScreenDimmed(false);
@@ -4281,6 +4375,7 @@ function completeTutorial() {
 function closeTutorialPanel() {
   state.tutorialOpen = false;
   state.profileExample = "";
+  state.liveDiagExample = "";
   setScreenDimmed(false);
   clearTutorialBlockedHint();
   removeTutorialExtraHighlights();
