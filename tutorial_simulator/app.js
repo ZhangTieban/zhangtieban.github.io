@@ -767,53 +767,229 @@ const tutorialSteps = [
     ]
   },
   {
-    id: "settingsDatetimeIntro",
+    id: "settingsDatetimeOpen",
     chapter: "settings",
     title: "日期與時間",
     target: "#settingsScreen [data-settings-page='datetime']",
     pad: 6,
-    lockControls: true,
     lines: [
       "日期與時間可以調整手錶顯示的時間、日期與 12/24 小時格式。",
-      "這一步先認識項目位置，不進入設定。"
+      "請點「日期與時間」進入子頁。"
+    ],
+    waitText: "等待你進入日期與時間",
+    waitFor: "settingsPage:datetime"
+  },
+  {
+    id: "settingsDatetimeMenu",
+    chapter: "settings",
+    title: "日期與時間內容",
+    target: "#settingsDetailBody .settings-sub-list",
+    settingsPage: "datetime",
+    pad: 6,
+    lockControls: true,
+    lines: [
+      "這裡分成設定時間、設定日期與 12/24 小時制。",
+      "時間由 RTC 晶片保存；如果電池完全沒電，時間可能需要重新調整。"
     ]
   },
   {
-    id: "settingsBrightnessIntro",
+    id: "settingsTimeOpen",
+    chapter: "settings",
+    title: "設定時間",
+    target: "#settingsDetailScreen [data-settings-page='time']",
+    settingsPage: "datetime",
+    pad: 6,
+    lines: [
+      "設定時間可調整小時與分鐘。",
+      "請點「設定時間」進入時間調整頁。"
+    ],
+    waitText: "等待你進入設定時間",
+    waitFor: "settingsPage:time"
+  },
+  {
+    id: "settingsTimeDetail",
+    chapter: "settings",
+    title: "時間調整頁",
+    target: "#settingsDetailBody .settings-time-stage",
+    settingsPage: "time",
+    pad: 6,
+    lockControls: true,
+    lines: [
+      "左右兩個滾輪分別是小時與分鐘。",
+      "調整完成後按保存，手錶會套用新的時間。"
+    ]
+  },
+  {
+    id: "settingsTimeBack",
+    chapter: "settings",
+    title: "返回日期與時間",
+    target: "#homeHitbox",
+    settingsPage: "time",
+    pad: 12,
+    lines: [
+      "子頁底部白線可以回上一層。",
+      "請從白線向上滑，回到日期與時間選單。"
+    ],
+    waitText: "等待你返回日期與時間",
+    waitFor: "settingsPage:datetime"
+  },
+  {
+    id: "settingsDateOpen",
+    chapter: "settings",
+    title: "設定日期",
+    target: "#settingsDetailScreen [data-settings-page='date']",
+    settingsPage: "datetime",
+    pad: 6,
+    lines: [
+      "設定日期可調整年份、月份與日期。",
+      "請點「設定日期」進入日期調整頁。"
+    ],
+    waitText: "等待你進入設定日期",
+    waitFor: "settingsPage:date"
+  },
+  {
+    id: "settingsDateDetail",
+    chapter: "settings",
+    title: "日期調整頁",
+    target: "#settingsDetailBody .settings-date-stage",
+    settingsPage: "date",
+    pad: 6,
+    lockControls: true,
+    lines: [
+      "三個滾輪分別是年、月、日。",
+      "月份改變時，日期範圍會跟著調整。"
+    ]
+  },
+  {
+    id: "settingsDateBack",
+    chapter: "settings",
+    title: "返回日期與時間",
+    target: "#homeHitbox",
+    settingsPage: "date",
+    pad: 12,
+    lines: [
+      "請再從底部白線向上滑。",
+      "這會回到日期與時間選單。"
+    ],
+    waitText: "等待你返回日期與時間",
+    waitFor: "settingsPage:datetime"
+  },
+  {
+    id: "settingsBrightnessOpen",
     chapter: "settings",
     title: "畫面亮度",
     target: "#settingsScreen [data-settings-page='brightness']",
     pad: 6,
-    lockControls: true,
     lines: [
       "畫面亮度用來調整螢幕顯示亮暗。",
-      "環境較亮時可以提高亮度，想省電時可以降低亮度。"
-    ]
+      "請點「畫面亮度」進入亮度調整頁。"
+    ],
+    waitText: "等待你進入畫面亮度",
+    waitFor: "settingsPage:brightness"
   },
   {
-    id: "settingsSleepIntro",
+    id: "settingsBrightnessDetail",
     chapter: "settings",
-    title: "畫面休眠",
-    target: "#settingsScreen [data-settings-page='offtime']",
+    title: "亮度調整",
+    target: "#settingsDetailBody .settings-slider-stage",
+    settingsPage: "brightness",
     pad: 6,
     lockControls: true,
     lines: [
-      "自動休眠可設定螢幕多久沒有操作後變暗。",
-      "預設 10 秒沒有操作時，畫面會自動變暗。",
-      "再次點擊或操作按鍵，就會恢復顯示。"
+      "滑桿越上方，畫面越亮。",
+      "戶外或亮處可提高亮度；想省電時可以降低亮度。"
     ]
   },
   {
-    id: "settingsVolumeIntro",
+    id: "settingsBrightnessBack",
+    chapter: "settings",
+    title: "返回設定主頁",
+    target: "#homeHitbox",
+    settingsPage: "brightness",
+    pad: 12,
+    lines: [
+      "亮度調整完成後，從底部白線向上滑回設定主頁。"
+    ],
+    waitText: "等待你返回設定主頁",
+    waitFor: "settingsMain"
+  },
+  {
+    id: "settingsSleepOpen",
+    chapter: "settings",
+    title: "自動休眠",
+    target: "#settingsScreen [data-settings-page='offtime']",
+    pad: 6,
+    lines: [
+      "自動休眠可設定螢幕多久沒有操作後變暗。",
+      "請點「自動休眠」進入時間選擇頁。"
+    ],
+    waitText: "等待你進入自動休眠",
+    waitFor: "settingsPage:offtime"
+  },
+  {
+    id: "settingsSleepDetail",
+    chapter: "settings",
+    title: "休眠時間",
+    target: "#settingsDetailBody .settings-offtime-stage",
+    settingsPage: "offtime",
+    pad: 6,
+    lockControls: true,
+    lines: [
+      "滾輪可選 10 秒、30 秒、1 分或常開。",
+      "選好後按保存，之後無操作就會依時間變暗。"
+    ]
+  },
+  {
+    id: "settingsSleepBack",
+    chapter: "settings",
+    title: "返回設定主頁",
+    target: "#homeHitbox",
+    settingsPage: "offtime",
+    pad: 12,
+    lines: [
+      "請從底部白線向上滑，回到設定主頁。"
+    ],
+    waitText: "等待你返回設定主頁",
+    waitFor: "settingsMain"
+  },
+  {
+    id: "settingsVolumeOpen",
     chapter: "settings",
     title: "音量",
     target: "#settingsScreen [data-settings-page='volume']",
     pad: 6,
+    lines: [
+      "音量用來調整提示音或操作音大小。",
+      "請點「音量」進入音量調整頁。"
+    ],
+    waitText: "等待你進入音量",
+    waitFor: "settingsPage:volume"
+  },
+  {
+    id: "settingsVolumeDetail",
+    chapter: "settings",
+    title: "音量調整",
+    target: "#settingsDetailBody .settings-slider-stage",
+    settingsPage: "volume",
+    pad: 6,
     lockControls: true,
     lines: [
-      "音量用來調整提示音或操作音的大小。",
+      "滑桿越上方，音量越大。",
       "需要安靜使用時，可以把音量調低。"
     ]
+  },
+  {
+    id: "settingsVolumeBack",
+    chapter: "settings",
+    title: "返回設定主頁",
+    target: "#homeHitbox",
+    settingsPage: "volume",
+    pad: 12,
+    lines: [
+      "請從底部白線向上滑，回到設定主頁。"
+    ],
+    waitText: "等待你返回設定主頁",
+    waitFor: "settingsMain"
   },
   {
     id: "settingsLevelIntro",
@@ -840,28 +1016,190 @@ const tutorialSteps = [
     ]
   },
   {
-    id: "settingsAboutIntro",
+    id: "settingsAboutOpen",
     chapter: "settings",
-    title: "關於裝置",
+    title: "關於設備",
     target: "#settingsScreen [data-settings-page='about']",
+    pad: 6,
+    lines: [
+      "關於設備可以查看設備資訊、電源資訊與授權內容。",
+      "請點「關於設備」進入關於頁。"
+    ],
+    waitText: "等待你進入關於設備",
+    waitFor: "settingsPage:about"
+  },
+  {
+    id: "settingsAboutMenu",
+    chapter: "settings",
+    title: "關於頁內容",
+    target: "#settingsDetailBody .settings-sub-list",
+    settingsPage: "about",
     pad: 6,
     lockControls: true,
     lines: [
-      "關於裝置可以查看裝置資訊與版本相關內容。",
-      "需要確認設備資訊時可以從這裡查看。"
+      "關於頁包含設備資訊、電源資訊、授權資訊與 Library 資訊。",
+      "接下來先查看設備資訊。"
     ]
   },
   {
-    id: "settingsDevicePowerIntro",
+    id: "settingsAboutDeviceOpen",
     chapter: "settings",
-    title: "裝置電源",
-    target: "#settingsScreen [data-settings-page='devicePower']",
+    title: "設備資訊",
+    target: "#settingsDetailScreen [data-settings-page='aboutDevice']",
+    settingsPage: "about",
+    pad: 6,
+    lines: [
+      "設備資訊會顯示廠商型號、韌體版本與硬體狀態。",
+      "請點「設備資訊」。"
+    ],
+    waitText: "等待你進入設備資訊",
+    waitFor: "settingsPage:aboutDevice"
+  },
+  {
+    id: "settingsAboutDeviceDetail",
+    chapter: "settings",
+    title: "查看設備資訊",
+    target: "#settingsDetailBody .settings-info-card",
+    settingsPage: "aboutDevice",
     pad: 6,
     lockControls: true,
     lines: [
-      "裝置電源項目用來查看或執行電源相關操作。",
-      "正式操作前，先確認目前所在頁面與電量狀態。"
+      "這裡可以確認廠商型號與韌體版本。",
+      "BLE 下方會顯示 IMU 狀態；目前 IMU 顯示停用。"
     ]
+  },
+  {
+    id: "settingsAboutDeviceBack",
+    chapter: "settings",
+    title: "返回關於頁",
+    target: "#homeHitbox",
+    settingsPage: "aboutDevice",
+    pad: 12,
+    lines: [
+      "請從底部白線向上滑，回到關於頁。"
+    ],
+    waitText: "等待你返回關於頁",
+    waitFor: "settingsPage:about"
+  },
+  {
+    id: "settingsBatteryOpen",
+    chapter: "settings",
+    title: "電源資訊",
+    target: "#settingsDetailScreen [data-settings-page='battery']",
+    settingsPage: "about",
+    pad: 6,
+    lines: [
+      "電源資訊會顯示電量、USB/VBUS 與電源狀態。",
+      "請點「電源資訊」。"
+    ],
+    waitText: "等待你進入電源資訊",
+    waitFor: "settingsPage:battery"
+  },
+  {
+    id: "settingsBatteryDetail",
+    chapter: "settings",
+    title: "查看電源資訊",
+    target: "#settingsDetailBody .settings-info-card",
+    settingsPage: "battery",
+    pad: 6,
+    lockControls: true,
+    lines: [
+      "這裡可以確認目前電量、是否充電與電壓資訊。",
+      "充電時 VBUS 相關欄位會顯示接入狀態。"
+    ]
+  },
+  {
+    id: "settingsBatteryBack",
+    chapter: "settings",
+    title: "返回關於頁",
+    target: "#homeHitbox",
+    settingsPage: "battery",
+    pad: 12,
+    lines: [
+      "請從底部白線向上滑，回到關於頁。"
+    ],
+    waitText: "等待你返回關於頁",
+    waitFor: "settingsPage:about"
+  },
+  {
+    id: "settingsDevicePowerOpen",
+    chapter: "settings",
+    title: "系統控制",
+    target: "#settingsScreen [data-settings-page='devicePower']",
+    pad: 6,
+    lines: [
+      "系統控制包含重新開機、重設設定與關機。",
+      "請點「系統控制」進入頁面。"
+    ],
+    waitText: "等待你進入系統控制",
+    waitFor: "settingsPage:devicePower"
+  },
+  {
+    id: "settingsDevicePowerMenu",
+    chapter: "settings",
+    title: "系統控制項目",
+    target: "#settingsDetailBody .settings-sub-list",
+    settingsPage: "devicePower",
+    pad: 6,
+    lockControls: true,
+    lines: [
+      "重新開機會重新啟動手錶。",
+      "關機會直接關閉裝置；重設設定會進入確認流程。"
+    ]
+  },
+  {
+    id: "settingsFactoryResetOpen",
+    chapter: "settings",
+    title: "重設設定",
+    target: "#settingsDetailScreen [data-settings-page='factoryReset']",
+    settingsPage: "devicePower",
+    pad: 6,
+    lines: [
+      "重設設定會清除設定與 BBP 相關資料，時間保留。",
+      "請點「重設設定」查看確認頁。"
+    ],
+    waitText: "等待你進入重設設定",
+    waitFor: "settingsPage:factoryReset"
+  },
+  {
+    id: "settingsFactoryResetDetail",
+    chapter: "settings",
+    title: "重設確認",
+    target: "#factoryResetBtn",
+    settingsPage: "factoryReset",
+    pad: 6,
+    lockControls: true,
+    lines: [
+      "正式重設前會再跳出確認視窗。",
+      "教學只介紹位置，不會要求你真的執行重設。"
+    ]
+  },
+  {
+    id: "settingsFactoryResetBack",
+    chapter: "settings",
+    title: "返回系統控制",
+    target: "#homeHitbox",
+    settingsPage: "factoryReset",
+    pad: 12,
+    lines: [
+      "請從底部白線向上滑，回到系統控制頁。"
+    ],
+    waitText: "等待你返回系統控制",
+    waitFor: "settingsPage:devicePower"
+  },
+  {
+    id: "settingsMainReturn",
+    chapter: "settings",
+    title: "回到設定主頁",
+    target: "#homeHitbox",
+    settingsPage: "devicePower",
+    pad: 12,
+    lines: [
+      "最後再從底部白線向上滑，回到設定主頁。",
+      "熟悉這個返回手勢後，就能在各設定頁之間自由操作。"
+    ],
+    waitText: "等待你返回設定主頁",
+    waitFor: "settingsMain"
   },
   {
     id: "settingsComplete",
@@ -869,7 +1207,7 @@ const tutorialSteps = [
     title: "第三章完成",
     target: "",
     lines: [
-      "你已完成進入設定的操作。",
+      "你已完成設定頁的深入教學。",
       "全部章節完成後，就可以結束教學。"
     ]
   }
@@ -972,7 +1310,7 @@ function shouldHoldAwakeForBbp() {
 
 function shouldHoldAwakeForTutorial() {
   if (!state.tutorialActive || !state.tutorialOpen || state.tutorialDone) return false;
-  const sleepStepIndex = tutorialSteps.findIndex((step) => step.id === "settingsSleepIntro");
+  const sleepStepIndex = tutorialSteps.findIndex((step) => step.id === "settingsSleepDetail");
   return sleepStepIndex < 0 || state.tutorialStep <= sleepStepIndex;
 }
 
@@ -3255,6 +3593,10 @@ function renderDebug() {
 }
 
 function tutorialConditionMet(condition) {
+  if (typeof condition === "string" && condition.startsWith("settingsPage:")) {
+    const page = condition.slice("settingsPage:".length);
+    return state.screen === "settingsDetail" && state.settingsPage === page;
+  }
   switch (condition) {
     case "watchOn":
       return state.screen !== "off" && state.screen !== "boot";
@@ -3288,6 +3630,8 @@ function tutorialConditionMet(condition) {
       return state.screen === "bbp" && !!tutorialStepEntryPage && state.page !== tutorialStepEntryPage;
     case "settings":
       return state.screen === "settings" || state.screen === "settingsDetail";
+    case "settingsMain":
+      return state.screen === "settings" && !state.settingsPage;
     default:
       return false;
   }
@@ -3712,6 +4056,17 @@ function syncTutorialStepSurface(step = currentTutorialStep()) {
   if (step.id === "swipePages") {
     setTutorialScreen("bbp");
     if (tutorialStepEntryId !== step.id && state.page !== "profile") setPage("profile");
+    return;
+  }
+
+  if (step.settingsPage) {
+    if (state.screen !== "settingsDetail" || state.settingsPage !== step.settingsPage) {
+      state.settingsPage = step.settingsPage;
+      state.settingsSavedText = "";
+      state.factoryResetConfirm = false;
+      setTutorialScreen("settingsDetail");
+      renderSettingsDetail();
+    }
     return;
   }
 
