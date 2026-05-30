@@ -2865,17 +2865,16 @@ function renderSettingsAboutDevice(body) {
   body.innerHTML = `
     <div class="settings-sub-list">
       <div class="settings-card settings-info-card">
-        ${settingsInfoRow("廠商", "Waveshare")}
-        ${settingsInfoRow("型號", "ESP32-S3-Touch-AMOLED-2.06")}
-        ${settingsInfoRow("韌體", "BS_260520")}
+        ${settingsInfoRow("廠商型號", "Waveshare ESP32-S3-Touch-AMOLED-2.06")}
+        ${settingsInfoRow("韌體", "BS_260530")}
       </div>
       <div class="settings-card settings-info-card">
         ${settingsInfoRow("主控", "ESP32-S3R8")}
         ${settingsInfoRow("介面", "LVGL 9.3")}
-        ${settingsInfoRow("慣性", "停用")}
         ${settingsInfoRow("電源", "AXP2101")}
         ${settingsInfoRow("畫面", "2.06-inch touch AMOLED")}
         ${settingsInfoRow("BLE", "1C:DB:D4:7A:F1:94")}
+        ${settingsInfoRow("IMU", "停用")}
         ${settingsInfoRow("Wi-Fi", "停用")}
         ${settingsInfoRow("Speaker", "使用")}
         ${settingsInfoRow("Mic", "停用")}

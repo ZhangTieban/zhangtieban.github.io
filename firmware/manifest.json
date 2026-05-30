@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "updatedAt": "2026-05-30T09:19:49+08:00",
+  "updatedAt": "2026-05-30T10:41:28+08:00",
   "firmwares": [
     {
       "id": "20260530_0004",
       "label": "app_20260530",
       "file": "firmware/beyblade_speed_watch_app_20260530_0004.bin",
-      "size": 3333952,
-      "sha256": "283ed14732ad422eff6286a76880c8dc6a6c3f8588585599f9cc1db6eb4f04e8",
+      "size": 3333920,
+      "sha256": "bee54775431cc4fa185b2d65b2dedd3245602b6d8007708a3b89654623dfc490",
       "recommended": true
     }
   ]
