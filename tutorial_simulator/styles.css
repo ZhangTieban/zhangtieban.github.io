@@ -2749,6 +2749,30 @@ button:disabled {
   opacity: 0.9;
 }
 
+.profile-chart .peak-line {
+  stroke: #7ddcff;
+  stroke-width: 1.4;
+  stroke-dasharray: 4 3;
+  opacity: 0.9;
+}
+
+.profile-chart .peak-dot {
+  fill: #ffcf5a;
+  stroke: #ffffff;
+  stroke-width: 1.2;
+}
+
+.profile-chart .chart-label,
+.profile-chart .diagnosis-label {
+  fill: #dff7ff;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.profile-chart .diagnosis-label {
+  fill: #97f0bd;
+}
+
 .profile-count {
   display: none;
 }

@@ -70,6 +70,12 @@ const profileShape = Array.from({ length: PROFILE_POINT_COUNT }, (_, idx) => {
   return Math.max(0, 4 * t * (1 - t));
 });
 const defaultProfile = profileShape.map((ratio) => Math.max(0, Math.round(7600 * ratio)));
+const tutorialProfileExample = [
+  0, 900, 2600, 5200, 8200, 10800, 12400, 11800,
+  10400, 8800, 7000, 5200, 3400, 1900, 900, 300,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+];
+const tutorialProfilePeak = Math.max(...tutorialProfileExample);
 
 const settingsPageDefs = {
   datetime: { title: "日期與時間", parent: "settings" },
@@ -122,6 +128,7 @@ const state = {
   analyzerMode: true,
   histShowAna: true,
   profileDetail: false,
+  profileExample: false,
   timeCardTimerMode: false,
   timeFormat12h: false,
   brightnessPct: 72,
@@ -676,15 +683,39 @@ const tutorialSteps = [
     ]
   },
   {
-    id: "profileChartIntro",
+    id: "profilePurposeIntro",
     chapter: "mode",
-    title: "發射分析圖",
+    title: "發射分析用途",
     target: "#profileCard",
     pad: 8,
     lockControls: true,
     lines: [
-      "發射分析頁會用曲線呈現一次發射的速度變化。",
-      "縱軸是 RPM，可快速看出加速、峰值與衰減狀態。"
+      "發射完成後，系統會把速度資料整理成 RPM 曲線。",
+      "這頁用來回看發射力道、最高速度與速度衰減。"
+    ]
+  },
+  {
+    id: "profileChartIntro",
+    chapter: "mode",
+    title: "範例折線圖",
+    target: "#profileCard",
+    pad: 8,
+    lockControls: true,
+    lines: [
+      "範例曲線會先快速上升到峰值。",
+      "峰值後若能逐步下降，代表這次發射資料較穩定。"
+    ]
+  },
+  {
+    id: "profileDiagnosisIntro",
+    chapter: "mode",
+    title: "判定結果",
+    target: "#profileCard",
+    pad: 8,
+    lockControls: true,
+    lines: [
+      "正常發射代表峰值夠高，峰值後也有明顯下降。",
+      "低速、高速、突然掉速會顯示對應的發射狀態。"
     ]
   },
   {
@@ -696,7 +727,7 @@ const tutorialSteps = [
     lockControls: true,
     lines: [
       "點擊發射分析卡可切換成分段資料。",
-      "分段資料會列出不同階段的時間與 RPM。"
+      "分段資料會列出加速、最高與降速階段的時間和 RPM。"
     ]
   },
   {
@@ -2558,7 +2589,19 @@ function renderProfileChart() {
   const pointNodes = mapped
     .map((pt) => `<circle class="point" cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="2"></circle>`)
     .join("");
-  svg.innerHTML = `${grid}<polyline class="line" points="${polyline}"></polyline>${pointNodes}`;
+  let annotations = "";
+  if (state.profileExample && mapped.length) {
+    const peak = mapped.reduce((best, pt) => (pt.rpm > best.rpm ? pt : best), mapped[0]);
+    const labelX = Math.min(width - 86, peak.x + 8);
+    const labelY = Math.max(18, peak.y - 10);
+    annotations = [
+      `<line class="peak-line" x1="${peak.x.toFixed(1)}" y1="${peak.y.toFixed(1)}" x2="${peak.x.toFixed(1)}" y2="${height - plotBottom}"></line>`,
+      `<circle class="peak-dot" cx="${peak.x.toFixed(1)}" cy="${peak.y.toFixed(1)}" r="4"></circle>`,
+      `<text class="chart-label" x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}">峰值 ${peak.rpm} RPM</text>`,
+      `<text class="diagnosis-label" x="${(plotLeft + 8).toFixed(1)}" y="${(height - 2).toFixed(1)}">範例：正常發射</text>`
+    ].join("");
+  }
+  svg.innerHTML = `${grid}<polyline class="line" points="${polyline}"></polyline>${pointNodes}${annotations}`;
 }
 
 function renderProfileDetail() {
@@ -3968,6 +4011,9 @@ function refreshTutorialScanSurface() {
 
 function syncTutorialStepSurface(step = currentTutorialStep()) {
   if (!state.tutorialActive || state.tutorialDone || !step) return;
+  if (!["profilePurposeIntro", "profileChartIntro", "profileDiagnosisIntro", "pageDotsIntro"].includes(step.id)) {
+    state.profileExample = false;
+  }
 
   const offSurfaceSteps = ["powerButtonIntro", "timerButtonIntro", "chargePortIntro", "sdSlotIntro", "chargePortUse"];
   if (offSurfaceSteps.includes(step.id)) {
@@ -4045,10 +4091,16 @@ function syncTutorialStepSurface(step = currentTutorialStep()) {
     return;
   }
 
-  const profileStepIds = ["profileChartIntro", "profileDetailIntro", "pageDotsIntro"];
+  const profileStepIds = ["profilePurposeIntro", "profileChartIntro", "profileDiagnosisIntro", "profileDetailIntro", "pageDotsIntro"];
   if (profileStepIds.includes(step.id)) {
     setTutorialBbpPage("profile");
     state.profileDetail = step.id === "profileDetailIntro";
+    state.profileExample = step.id !== "profileDetailIntro";
+    state.profilePoints = tutorialProfileExample.slice();
+    state.phaseRows = buildPhaseRows(tutorialProfilePeak);
+    state.shotPeak = tutorialProfilePeak;
+    state.liveMax = tutorialProfilePeak;
+    state.lastDone = true;
     renderProfile();
     return;
   }
@@ -4120,6 +4172,7 @@ function completeTutorial() {
   state.tutorialActive = false;
   state.tutorialOpen = false;
   state.tutorialReviewMode = false;
+  state.profileExample = false;
   resetTutorialStepEntry();
   persistTutorialDone(true);
   setScreenDimmed(false);
@@ -4129,6 +4182,7 @@ function completeTutorial() {
 
 function closeTutorialPanel() {
   state.tutorialOpen = false;
+  state.profileExample = false;
   setScreenDimmed(false);
   clearTutorialBlockedHint();
   removeTutorialExtraHighlights();
