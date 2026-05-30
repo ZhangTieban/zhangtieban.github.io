@@ -2762,8 +2762,24 @@ button:disabled {
   stroke-width: 1.2;
 }
 
+.profile-chart .threshold-line {
+  stroke: #ffb74d;
+  stroke-width: 1.1;
+  stroke-dasharray: 3 3;
+  opacity: 0.85;
+}
+
+.profile-chart .drop-line {
+  stroke: #ff6b6b;
+  stroke-width: 2.2;
+  opacity: 0.95;
+}
+
 .profile-chart .chart-label,
-.profile-chart .diagnosis-label {
+.profile-chart .diagnosis-label,
+.profile-chart .chart-note-label,
+.profile-chart .threshold-label,
+.profile-chart .drop-label {
   fill: #dff7ff;
   font-size: 12px;
   font-weight: 750;
@@ -2771,6 +2787,15 @@ button:disabled {
 
 .profile-chart .diagnosis-label {
   fill: #97f0bd;
+}
+
+.profile-chart .chart-note-label,
+.profile-chart .threshold-label {
+  fill: #ffcf5a;
+}
+
+.profile-chart .drop-label {
+  fill: #ff9a9a;
 }
 
 .profile-count {

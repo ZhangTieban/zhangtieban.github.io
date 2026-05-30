@@ -70,12 +70,49 @@ const profileShape = Array.from({ length: PROFILE_POINT_COUNT }, (_, idx) => {
   return Math.max(0, 4 * t * (1 - t));
 });
 const defaultProfile = profileShape.map((ratio) => Math.max(0, Math.round(7600 * ratio)));
-const tutorialProfileExample = [
+const tutorialProfileExamples = {
+  normal: {
+    label: "範例：正常發射",
+    note: "峰值夠高 + 明顯下降",
+    points: [
   0, 900, 2600, 5200, 8200, 10800, 12400, 11800,
   10400, 8800, 7000, 5200, 3400, 1900, 900, 300,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-];
-const tutorialProfilePeak = Math.max(...tutorialProfileExample);
+    ]
+  },
+  low: {
+    label: "範例：低速發射",
+    note: "峰值低於 2000",
+    threshold: 2000,
+    points: [
+      0, 160, 360, 680, 1040, 1380, 1660, 1580,
+      1320, 960, 620, 320, 120, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ]
+  },
+  high: {
+    label: "範例：高速發射",
+    note: "連續 3 點超過 19000",
+    threshold: 19000,
+    points: [
+      0, 1800, 5200, 10800, 16600, 19400, 20200, 19800,
+      17200, 12800, 8200, 4600, 1800, 500, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ]
+  },
+  abnormal: {
+    label: "範例：異常發射",
+    note: "急掉速 / CORD_JAM_POST",
+    highlightDrop: true,
+    points: [
+      0, 1000, 3000, 6200, 9600, 11800, 11000, 900,
+      220, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ]
+  }
+};
+const tutorialProfileDefault = tutorialProfileExamples.normal;
+const tutorialProfilePeak = Math.max(...tutorialProfileDefault.points);
 
 const settingsPageDefs = {
   datetime: { title: "日期與時間", parent: "settings" },
@@ -128,7 +165,7 @@ const state = {
   analyzerMode: true,
   histShowAna: true,
   profileDetail: false,
-  profileExample: false,
+  profileExample: "",
   timeCardTimerMode: false,
   timeFormat12h: false,
   brightnessPct: 72,
@@ -697,25 +734,49 @@ const tutorialSteps = [
   {
     id: "profileChartIntro",
     chapter: "mode",
-    title: "範例折線圖",
+    title: "正常發射",
     target: "#profileCard",
     pad: 8,
     lockControls: true,
     lines: [
-      "範例曲線會先快速上升到峰值。",
-      "峰值後若能逐步下降，代表這次發射資料較穩定。"
+      "峰值轉速夠高，而且峰值後有明顯下降曲線。",
+      "後段至少連續下降 3 點，總下降比例大於 15%。"
     ]
   },
   {
-    id: "profileDiagnosisIntro",
+    id: "profileLowSpeedIntro",
     chapter: "mode",
-    title: "判定結果",
+    title: "低速發射",
     target: "#profileCard",
     pad: 8,
     lockControls: true,
     lines: [
-      "正常發射代表峰值夠高，峰值後也有明顯下降。",
-      "低速、高速、突然掉速會顯示對應的發射狀態。"
+      "清掉突波後，最高轉速低於 2000。",
+      "代表發射力道不足，或沒有真正拉起速度。"
+    ]
+  },
+  {
+    id: "profileHighSpeedIntro",
+    chapter: "mode",
+    title: "高速發射",
+    target: "#profileCard",
+    pad: 8,
+    lockControls: true,
+    lines: [
+      "原始資料連續 3 點以上超過 19000。",
+      "代表判定為真正超速，不是單點雜訊。"
+    ]
+  },
+  {
+    id: "profileAbnormalIntro",
+    chapter: "mode",
+    title: "異常發射",
+    target: "#profileCard",
+    pad: 8,
+    lockControls: true,
+    lines: [
+      "包含卡繩、急掉速、資料不足、峰值在最後一點等。",
+      "下降段不完整時，內部主要以 CORD_JAM_POST 代表。"
     ]
   },
   {
@@ -2590,15 +2651,39 @@ function renderProfileChart() {
     .map((pt) => `<circle class="point" cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="2"></circle>`)
     .join("");
   let annotations = "";
-  if (state.profileExample && mapped.length) {
+  const example = tutorialProfileExamples[state.profileExample] || null;
+  if (example && mapped.length) {
     const peak = mapped.reduce((best, pt) => (pt.rpm > best.rpm ? pt : best), mapped[0]);
     const labelX = Math.min(width - 86, peak.x + 8);
     const labelY = Math.max(18, peak.y - 10);
+    const extras = [];
+    if (example.threshold) {
+      const thresholdY = plotTop + (1 - Math.min(maxY, Math.max(0, example.threshold)) / maxY) * plotHeight;
+      extras.push(`<line class="threshold-line" x1="${plotLeft}" y1="${thresholdY.toFixed(1)}" x2="${width - plotRight}" y2="${thresholdY.toFixed(1)}"></line>`);
+      extras.push(`<text class="threshold-label" x="${(width - 82).toFixed(1)}" y="${Math.max(12, thresholdY - 5).toFixed(1)}">${example.threshold}</text>`);
+    }
+    if (example.highlightDrop) {
+      let dropIdx = 1;
+      let dropAmount = -Infinity;
+      for (let i = 1; i < mapped.length; i += 1) {
+        const amount = mapped[i - 1].rpm - mapped[i].rpm;
+        if (amount > dropAmount) {
+          dropAmount = amount;
+          dropIdx = i;
+        }
+      }
+      const prev = mapped[dropIdx - 1];
+      const cur = mapped[dropIdx];
+      extras.push(`<line class="drop-line" x1="${prev.x.toFixed(1)}" y1="${prev.y.toFixed(1)}" x2="${cur.x.toFixed(1)}" y2="${cur.y.toFixed(1)}"></line>`);
+      extras.push(`<text class="drop-label" x="${Math.min(width - 58, cur.x + 8).toFixed(1)}" y="${Math.max(18, cur.y - 8).toFixed(1)}">急掉速</text>`);
+    }
     annotations = [
+      ...extras,
       `<line class="peak-line" x1="${peak.x.toFixed(1)}" y1="${peak.y.toFixed(1)}" x2="${peak.x.toFixed(1)}" y2="${height - plotBottom}"></line>`,
       `<circle class="peak-dot" cx="${peak.x.toFixed(1)}" cy="${peak.y.toFixed(1)}" r="4"></circle>`,
       `<text class="chart-label" x="${labelX.toFixed(1)}" y="${labelY.toFixed(1)}">峰值 ${peak.rpm} RPM</text>`,
-      `<text class="diagnosis-label" x="${(plotLeft + 8).toFixed(1)}" y="${(height - 2).toFixed(1)}">範例：正常發射</text>`
+      `<text class="diagnosis-label" x="${(plotLeft + 8).toFixed(1)}" y="${(height - 14).toFixed(1)}">${example.label}</text>`,
+      `<text class="chart-note-label" x="${(plotLeft + 8).toFixed(1)}" y="${(height - 2).toFixed(1)}">${example.note}</text>`
     ].join("");
   }
   svg.innerHTML = `${grid}<polyline class="line" points="${polyline}"></polyline>${pointNodes}${annotations}`;
@@ -4011,8 +4096,8 @@ function refreshTutorialScanSurface() {
 
 function syncTutorialStepSurface(step = currentTutorialStep()) {
   if (!state.tutorialActive || state.tutorialDone || !step) return;
-  if (!["profilePurposeIntro", "profileChartIntro", "profileDiagnosisIntro", "pageDotsIntro"].includes(step.id)) {
-    state.profileExample = false;
+  if (!["profilePurposeIntro", "profileChartIntro", "profileLowSpeedIntro", "profileHighSpeedIntro", "profileAbnormalIntro", "pageDotsIntro"].includes(step.id)) {
+    state.profileExample = "";
   }
 
   const offSurfaceSteps = ["powerButtonIntro", "timerButtonIntro", "chargePortIntro", "sdSlotIntro", "chargePortUse"];
@@ -4091,15 +4176,25 @@ function syncTutorialStepSurface(step = currentTutorialStep()) {
     return;
   }
 
-  const profileStepIds = ["profilePurposeIntro", "profileChartIntro", "profileDiagnosisIntro", "profileDetailIntro", "pageDotsIntro"];
+  const profileStepIds = ["profilePurposeIntro", "profileChartIntro", "profileLowSpeedIntro", "profileHighSpeedIntro", "profileAbnormalIntro", "profileDetailIntro", "pageDotsIntro"];
   if (profileStepIds.includes(step.id)) {
     setTutorialBbpPage("profile");
     state.profileDetail = step.id === "profileDetailIntro";
-    state.profileExample = step.id !== "profileDetailIntro";
-    state.profilePoints = tutorialProfileExample.slice();
-    state.phaseRows = buildPhaseRows(tutorialProfilePeak);
-    state.shotPeak = tutorialProfilePeak;
-    state.liveMax = tutorialProfilePeak;
+    const exampleByStep = {
+      profilePurposeIntro: "normal",
+      profileChartIntro: "normal",
+      profileLowSpeedIntro: "low",
+      profileHighSpeedIntro: "high",
+      profileAbnormalIntro: "abnormal",
+      pageDotsIntro: "normal"
+    };
+    state.profileExample = exampleByStep[step.id] || "";
+    const example = tutorialProfileExamples[state.profileExample] || tutorialProfileDefault;
+    const peak = Math.max(...example.points);
+    state.profilePoints = example.points.slice();
+    state.phaseRows = buildPhaseRows(peak);
+    state.shotPeak = peak;
+    state.liveMax = peak;
     state.lastDone = true;
     renderProfile();
     return;
@@ -4172,7 +4267,7 @@ function completeTutorial() {
   state.tutorialActive = false;
   state.tutorialOpen = false;
   state.tutorialReviewMode = false;
-  state.profileExample = false;
+  state.profileExample = "";
   resetTutorialStepEntry();
   persistTutorialDone(true);
   setScreenDimmed(false);
@@ -4182,7 +4277,7 @@ function completeTutorial() {
 
 function closeTutorialPanel() {
   state.tutorialOpen = false;
-  state.profileExample = false;
+  state.profileExample = "";
   setScreenDimmed(false);
   clearTutorialBlockedHint();
   removeTutorialExtraHighlights();
